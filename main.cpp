@@ -5,8 +5,7 @@
 int main()
 {
     Board board;
-    std::string e = board.prettyPrint();
-    std::cout << e;
+    std::cout << board.prettyPrint();
 
     return 0;
 }

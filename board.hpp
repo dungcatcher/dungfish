@@ -2,7 +2,7 @@
 #include <string>
 
 class Board {   
-    uint64_t pieceBitboard[8] = {
+    uint64_t pieceBitboards[8] = {
         0x000000000000FFFF, // White
         0xFFFF000000000000, // Black
         0x00FF00000000FF00, // Pawn
@@ -13,15 +13,10 @@ class Board {
         0x0800000000000008 // King
     };
 public:
+    std::string getPieceAtLocation(int x, int y);
     std::string prettyPrint();
     enum enumPiece {
-        nWhite, // Any white piece
-        nBlack, // Any black piecce
-        nPawn, // Any pawn etc.
-        nKnight,
-        nBishop,
-        nRook,
-        nQueen,
-        nKing
+        nWhite, nBlack, nPawn, nKnight, nBishop, nRook, nQueen, nKing
     };
+    std::string pieceLetters[8] = { "w", "b", "p", "n", "b", "r", "q", "k" };
 };
