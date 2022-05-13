@@ -5,10 +5,14 @@
 std::string Board::getPieceAtLocation(int x, int y) {
     y = 7 - y;  // Reverse y value
     int squareIndex = 8 * y + x;
-    uint64_t bitIndex = 1 << squareIndex;
+    uint64_t bitIndex = (uint64_t)1 << squareIndex;
     for (int i = 2; i < 8; i++) {
-        if ((pieceBitboards[i] & bitIndex) != 0)
-            return pieceLetters[i];
+        if ((pieceBitboards[i] & bitIndex) != 0) {
+            std::string pieceLetter = pieceLetters[i];
+            if ((pieceBitboards[nWhite] & bitIndex) != 0) // White is uppercase
+                for (auto & c: pieceLetter) c = toupper(c);
+            return pieceLetter;
+        }
     };
     return "";
 };

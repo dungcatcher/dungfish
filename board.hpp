@@ -9,8 +9,8 @@ class Board {
         0x4200000000000042, // Knight
         0x2400000000000024, // Bishop
         0x8100000000000081, // Rook
-        0x1000000000000010, // Queen
-        0x0800000000000008 // King
+        0x0800000000000008, // Queen
+        0x1000000000000010 // King
     };
 public:
     std::string getPieceAtLocation(int x, int y);
