@@ -2,6 +2,11 @@
 #include <iostream> 
 #include <bitset>
 
+uint64_t Board::getPieceSet(enumPiece pt) {return pieceBitboards[pt];}
+uint64_t Board::getOccupied() {return pieceBitboards[nWhite] | pieceBitboards[nBlack];}
+
+uint64_t Board::getWhitePawns() {return pieceBitboards[nPawn] & pieceBitboards[nWhite];}
+
 std::string Board::getPieceAtLocation(int x, int y) {
     y = 7 - y;  // Reverse y value
     int squareIndex = 8 * y + x;

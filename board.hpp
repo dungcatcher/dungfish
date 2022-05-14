@@ -2,6 +2,7 @@
 #include <string>
 
 class Board {   
+public:
     uint64_t pieceBitboards[8] = {
         0x000000000000FFFF, // White
         0xFFFF000000000000, // Black
@@ -12,11 +13,15 @@ class Board {
         0x0800000000000008, // Queen
         0x1000000000000010 // King
     };
-public:
-    std::string getPieceAtLocation(int x, int y);
-    std::string prettyPrint();
     enum enumPiece {
         nWhite, nBlack, nPawn, nKnight, nBishop, nRook, nQueen, nKing
     };
+    uint64_t getPieceSet(enumPiece pt);
+    uint64_t getOccupied(); // All occupied squares
+
+    uint64_t getWhitePawns();
+    std::string getPieceAtLocation(int x, int y);
+    std::string prettyPrint();
+    
     std::string pieceLetters[8] = { "w", "b", "p", "n", "b", "r", "q", "k" };
 };
