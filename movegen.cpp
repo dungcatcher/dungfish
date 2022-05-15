@@ -83,6 +83,17 @@ void generateWPawnMoves(uint64_t wpawns, uint64_t empty) {
 
       wSinglePushPawns &= ~(wPawnBb); // Set that bit to 0
    }
+   uint64_t wDoublePushPawns = wPawnsAble2DblPush(wpawns, empty);
+   while (wDoublePushPawns != 0) {
+      int idx = bitScanForward(wDoublePushPawns);
+      uint64_t wPawnBb = (uint64_t)0x1 << idx;
+      uint64_t wPawnTarget = wDblPushTargets(wPawnBb, empty);
+      int targetIdx = bitScanForward(wPawnTarget);
+      Move move(idx, targetIdx, 0x0);
+      std::cout << move.start << " " << move.end << " " << move.flags << "\n";
+
+      wDoublePushPawns &= ~(wPawnBb);
+   }
 }
 
 void generateBPawnMoves(uint64_t bpawns, uint64_t empty) {
@@ -96,5 +107,16 @@ void generateBPawnMoves(uint64_t bpawns, uint64_t empty) {
       std::cout << move.start << " " << move.end << " " << move.flags << "\n";
 
       bSinglePushPawns &= ~(bPawnBb); // Set that bit to 0
+   }
+   uint64_t bDoublePushPawns = wPawnsAble2DblPush(bpawns, empty);
+   while (bDoublePushPawns != 0) {
+      int idx = bitScanForward(bDoublePushPawns);
+      uint64_t bPawnBb = (uint64_t)0x1 << idx;
+      uint64_t bPawnTarget = wDblPushTargets(bPawnBb, empty);
+      int targetIdx = bitScanForward(bPawnTarget);
+      Move move(idx, targetIdx, 0x0);
+      std::cout << move.start << " " << move.end << " " << move.flags << "\n";
+
+      bDoublePushPawns &= ~(bPawnBb);
    }
 }
