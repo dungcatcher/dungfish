@@ -1,5 +1,11 @@
 #include <cstdint>
 
+class Move {
+public:
+    Move(unsigned int start, unsigned int end, unsigned int flags);
+    
+};
+
 const uint64_t notAFile = 0xfefefefefefefefe; // ~0x0101010101010101
 const uint64_t notHFile = 0x7f7f7f7f7f7f7f7f; // ~0x8080808080808080
 

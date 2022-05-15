@@ -1,5 +1,10 @@
 #include "movegen.hpp"
 
+// Start & End (Lerf (0, 63)), flags see: https://www.chessprogramming.org/Encoding_Moves#Information_Required
+Move::Move(unsigned int start, unsigned int end, unsigned int flags) {
+   unsigned int move = ((flags & 0xf) << 12) | ((start & 0x3f) << 6) | (end & 0x3f);
+}
+
 uint64_t soutOne (uint64_t b) {return  b >> 8;}
 uint64_t nortOne (uint64_t b) {return  b << 8;}
 uint64_t eastOne (uint64_t b) {return (b << 1) & notAFile;}
