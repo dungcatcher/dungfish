@@ -7,9 +7,6 @@ int main()
 {
     Board board;
     std::cout << board.prettyPrint();
-    uint64_t e = wPawnsAble2DblPush(board.getWhitePawns(), ~board.getOccupied());
-    uint64_t f = wDblPushTargets(e, ~board.getOccupied());
-    std::bitset<64> x(f);
-    std::cout << x << "\n";
+    generateWPawnMoves(board.getWhitePawns(), ~board.getOccupied());
     return 0;
 }

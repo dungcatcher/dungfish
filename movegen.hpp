@@ -1,9 +1,13 @@
 #include <cstdint>
+#include <bitset>
+#include <iostream>
 
 class Move {
 public:
     Move(unsigned int start, unsigned int end, unsigned int flags);
-    
+    unsigned int start;
+    unsigned int end;
+    unsigned int flags;
 };
 
 const uint64_t notAFile = 0xfefefefefefefefe; // ~0x0101010101010101
@@ -24,3 +28,4 @@ uint64_t bSinglePushTargets(uint64_t bpawns, uint64_t empty);
 uint64_t bDoublePushTargets(uint64_t bpawns, uint64_t empty);
 uint64_t wPawnsAble2Push(uint64_t wpawns, uint64_t empty);
 uint64_t wPawnsAble2DblPush(uint64_t wpawns, uint64_t empty);
+void generatePawnMoves(uint64_t wpawns, uint64_t empty);
