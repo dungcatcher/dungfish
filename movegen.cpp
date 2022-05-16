@@ -1,12 +1,5 @@
 #include "movegen.hpp"
 
-// Start & End (Lerf (0, 63)), flags see: https://www.chessprogramming.org/Encoding_Moves#Information_Required
-Move::Move(unsigned int start, unsigned int end, unsigned int flags) {
-   this->start = start;
-   this->end = end;
-   this->flags = flags;
-}
-
 uint64_t soutOne (uint64_t b) {return  b >> 8;}
 uint64_t nortOne (uint64_t b) {return  b << 8;}
 uint64_t eastOne (uint64_t b) {return (b << 1) & notAFile;}
@@ -53,15 +46,29 @@ uint64_t wPawnsAble2DblPush(uint64_t wpawns, uint64_t empty) {
    return wPawnsAble2Push(wpawns, emptyRank3);
 }
 
-void generateWPawnMoves(uint64_t wpawns, uint64_t empty) {
+uint64_t bPawnsAble2Push(uint64_t bpawns, uint64_t empty) {
+   return nortOne(empty) & bpawns;
+}
+
+uint64_t bPawnsAble2DblPush(uint64_t bpawns, uint64_t empty) {
+   const uint64_t rank5 = 0x000000FF000000;
+   uint64_t emptyRank6 = nortOne(empty & rank5) & empty;
+   return wPawnsAble2Push(bpawns, emptyRank6);
+}
+
+Move* generateWPawnMoves(Move* moves, uint64_t wpawns, uint64_t empty) {
+   int numMoves = 0;
    uint64_t wSinglePushPawns = wPawnsAble2Push(wpawns, empty);
    while (wSinglePushPawns != 0) {
       int idx = bitScanForward(wSinglePushPawns); // Index of the first least significant 1 bit
       uint64_t wPawnBb = (uint64_t)0x1 << idx; // Bitboard containing the current pawn
       uint64_t wPawnTarget = wSinglePushTargets(wPawnBb, empty);
       int targetIdx = bitScanForward(wPawnTarget);
-      Move move(idx, targetIdx, 0x0);
-      std::cout << move.start << " " << move.end << " " << move.flags << "\n";
+      Move move;
+      move.start = idx;
+      move.end = targetIdx;
+      move.flags = 0x0;
+      *moves++ = move;
 
       wSinglePushPawns &= ~(wPawnBb); // Set that bit to 0
    }
@@ -71,34 +78,46 @@ void generateWPawnMoves(uint64_t wpawns, uint64_t empty) {
       uint64_t wPawnBb = (uint64_t)0x1 << idx;
       uint64_t wPawnTarget = wDblPushTargets(wPawnBb, empty);
       int targetIdx = bitScanForward(wPawnTarget);
-      Move move(idx, targetIdx, 0x0);
-      std::cout << move.start << " " << move.end << " " << move.flags << "\n";
+      Move move;
+      move.start = idx;
+      move.end = targetIdx;
+      move.flags = 0x0;
+      *moves++ = move;
 
       wDoublePushPawns &= ~(wPawnBb);
    }
+   
+   return moves;
 }
 
-void generateBPawnMoves(uint64_t bpawns, uint64_t empty) {
+Move* generateBPawnMoves(Move* moves, uint64_t bpawns, uint64_t empty) {
    uint64_t bSinglePushPawns = wPawnsAble2Push(bpawns, empty);
    while (bSinglePushPawns != 0) {
-      int idx = bitScanForward(bSinglePushPawns); // Index of the first least significant 1 bit
-      uint64_t bPawnBb = (uint64_t)0x1 << idx; // Bitboard containing the current pawn
+      int idx = bitScanForward(bSinglePushPawns);
+      uint64_t bPawnBb = (uint64_t)0x1 << idx;
       uint64_t bPawnTarget = wSinglePushTargets(bPawnBb, empty);
       int targetIdx = bitScanForward(bPawnTarget);
-      Move move(idx, targetIdx, 0x0);
-      std::cout << move.start << " " << move.end << " " << move.flags << "\n";
-
-      bSinglePushPawns &= ~(bPawnBb); // Set that bit to 0
+      Move move;
+      move.start = idx;
+      move.end = targetIdx;
+      move.flags = 0x0;
+      *moves++ = move;
+      bSinglePushPawns &= ~(bPawnBb);
    }
+
    uint64_t bDoublePushPawns = wPawnsAble2DblPush(bpawns, empty);
    while (bDoublePushPawns != 0) {
       int idx = bitScanForward(bDoublePushPawns);
       uint64_t bPawnBb = (uint64_t)0x1 << idx;
       uint64_t bPawnTarget = wDblPushTargets(bPawnBb, empty);
       int targetIdx = bitScanForward(bPawnTarget);
-      Move move(idx, targetIdx, 0x0);
-      std::cout << move.start << " " << move.end << " " << move.flags << "\n";
-
+      Move move;
+      move.start = idx;
+      move.end = targetIdx;
+      move.flags = 0x0;
+      *moves++ = move;
       bDoublePushPawns &= ~(bPawnBb);
    }
+
+   return moves;
 }

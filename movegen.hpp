@@ -2,12 +2,10 @@
 #include <bitset>
 #include <iostream>
 
-class Move {
-public:
-    Move(unsigned int start, unsigned int end, unsigned int flags);
-    unsigned int start;
+struct Move {
+    unsigned int start; // Number from 0-63 (lerf)
     unsigned int end;
-    unsigned int flags;
+    unsigned int flags; // See: https://www.chessprogramming.org/Encoding_Moves#Information_Required
 };
 
 const uint64_t notAFile = 0xfefefefefefefefe; // ~0x0101010101010101
@@ -48,5 +46,8 @@ uint64_t bSinglePushTargets(uint64_t bpawns, uint64_t empty);
 uint64_t bDoublePushTargets(uint64_t bpawns, uint64_t empty);
 uint64_t wPawnsAble2Push(uint64_t wpawns, uint64_t empty);
 uint64_t wPawnsAble2DblPush(uint64_t wpawns, uint64_t empty);
-void generateWPawnMoves(uint64_t wpawns, uint64_t empty);
-void generateBPawnMoves(uint64_t bpawns, uint64_t empty);
+uint64_t bPawnsAble2Push(uint64_t bpawns, uint64_t empty);
+uint64_t bPawnsAble2DblPush(uint64_t bpawns, uint64_t empty);
+
+Move* generateWPawnMoves(Move *moves, uint64_t wpawns, uint64_t empty);
+Move* generateBPawnMoves(Move *moves, uint64_t bpawns, uint64_t empty);
