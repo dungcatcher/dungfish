@@ -22,6 +22,6 @@ public:
     uint64_t getWhitePawns();
     std::string getPieceAtLocation(int x, int y);
     std::string prettyPrint();
-    
+
     std::string pieceLetters[8] = { "w", "b", "p", "n", "b", "r", "q", "k" };
 };

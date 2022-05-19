@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <bitset>
 #include <iostream>
+#include <vector>
 
 struct Move {
     unsigned int start; // Number from 0-63 (lerf)
@@ -10,6 +11,8 @@ struct Move {
 
 const uint64_t notAFile = 0xfefefefefefefefe; // ~0x0101010101010101
 const uint64_t notHFile = 0x7f7f7f7f7f7f7f7f; // ~0x8080808080808080
+
+void prettyPrintBitboard(uint64_t bb);
 
 uint64_t soutOne (uint64_t b);
 uint64_t nortOne (uint64_t b);
@@ -40,14 +43,15 @@ const int index64[64] = {
  */
 int bitScanForward(uint64_t bb);
 
+void addMove(unsigned int start, unsigned int end, unsigned int flags, Move* moves);
+
 uint64_t wSinglePushTargets(uint64_t wpawns, uint64_t empty);
 uint64_t wDblPushTargets(uint64_t wpawns, uint64_t empty);
 uint64_t bSinglePushTargets(uint64_t bpawns, uint64_t empty);
-uint64_t bDoublePushTargets(uint64_t bpawns, uint64_t empty);
+uint64_t bDblPushTargets(uint64_t bpawns, uint64_t empty);
 uint64_t wPawnsAble2Push(uint64_t wpawns, uint64_t empty);
 uint64_t wPawnsAble2DblPush(uint64_t wpawns, uint64_t empty);
 uint64_t bPawnsAble2Push(uint64_t bpawns, uint64_t empty);
 uint64_t bPawnsAble2DblPush(uint64_t bpawns, uint64_t empty);
 
-Move* generateWPawnMoves(Move *moves, uint64_t wpawns, uint64_t empty);
-Move* generateBPawnMoves(Move *moves, uint64_t bpawns, uint64_t empty);
+void generatePawnMoves(std::vector<Move>& moveList, bool isWhite, uint64_t pawns, uint64_t empty);
