@@ -77,7 +77,6 @@ uint64_t bPawnsAble2DblPush(uint64_t bpawns, uint64_t empty) {
 }
 
 void generatePawnMoves(std::vector<Move> &moveList, bool isWhite, uint64_t pawns, uint64_t empty) {
-	std::cout << "heheha" << "\n";
 	uint64_t singlePushPawns = isWhite ? (wPawnsAble2Push(pawns, empty)) : (bPawnsAble2Push(pawns, empty));
 	while (singlePushPawns != 0) {
 		int idx = bitScanForward(singlePushPawns); // Index of the first least significant 1 bit

@@ -2,6 +2,10 @@
 #include <iostream> 
 #include <bitset>
 
+Board::Board(std::string fen) {
+    parseFen(fen);
+}
+
 uint64_t Board::getPieceSet(enumPiece pt) {return pieceBitboards[pt];}
 uint64_t Board::getOccupied() {return pieceBitboards[nWhite] | pieceBitboards[nBlack];}
 
@@ -39,3 +43,47 @@ std::string Board::prettyPrint() {
 
     return s;
 };
+
+void Board::parseFen(std::string fen) {
+    int row = 0;
+    int col = 0;
+
+    for (auto &ch : fen) {
+        int lerfIdx = (8 * (7 - row)) + (col);
+        uint64_t bitboardIdx = (uint64_t)0x1 << lerfIdx;
+
+        if (isalpha(ch)) { // Is a piece
+            if (isupper(ch))  // White
+                pieceBitboards[nWhite] |= bitboardIdx;
+            else // Black
+                pieceBitboards[nBlack] |= bitboardIdx;
+
+            // Piece types
+            char lowerCh = tolower(ch);
+            switch (lowerCh) {
+                case 'p':
+                    pieceBitboards[nPawn] |= bitboardIdx; break;
+                case 'n':
+                    pieceBitboards[nKnight] |= bitboardIdx; break;
+                case 'b':
+                    pieceBitboards[nBishop] |= bitboardIdx; break;
+                case 'r':
+                    pieceBitboards[nRook] |= bitboardIdx; break;
+                case 'q':
+                    pieceBitboards[nQueen] |= bitboardIdx; break;
+                case 'k':
+                    pieceBitboards[nBishop] |= bitboardIdx; break;
+            }
+        }
+
+        if (std::isdigit(ch))
+            col += int(ch);
+        else 
+            col++;
+        
+        if (ch == '/') {
+            col = 0;
+            row++;
+        }
+    }
+}

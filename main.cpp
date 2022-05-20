@@ -7,7 +7,8 @@
 
 int main()
 {
-    Board board;
+    std::string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+    Board board(startFen);
     std::cout << board.prettyPrint();
     std::vector<Move> moveList;
     generatePawnMoves(moveList, true, board.getWhitePawns(), ~board.getOccupied());
