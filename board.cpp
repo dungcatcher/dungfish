@@ -77,7 +77,7 @@ void Board::parseFen(std::string fen) {
         }
 
         if (std::isdigit(ch))
-            col += int(ch);
+            col += ch - '0'; // Numerical value of digit char
         else 
             col++;
         
