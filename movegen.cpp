@@ -1,25 +1,26 @@
 #include "movegen.hpp"
 
-// void prettyPrintBitboard(uint64_t bb) {
-// 	std::bitset<64> bitset(bb);
-// 	std::string binaryString = bitset.to_string();
-// 	for (int i = 0; i < binaryString.length(); i++) {
-// 		std::cout << binaryString[i];
-// 		if (i % 8 == 0 && i != 0) {
-// 			std::cout << "\n";
-// 		}
-// 	}
-// 	std::cout << "\n";
-// }
+std::string prettyPrintBitboard(uint64_t bb) {
+	std::bitset<64> bitset(bb);
+	std::string binaryString = bitset.to_string();
+	std::string splitBinaryString = "";
+	for (int i = 0; i < binaryString.length(); i++) {
+		splitBinaryString += binaryString[i];
+		if ((i + 1) % 8 == 0)
+			splitBinaryString += '\n';
+	}
+
+	return splitBinaryString;
+}
 
 uint64_t soutOne (uint64_t b) {return  b >> 8;}
 uint64_t nortOne (uint64_t b) {return  b << 8;}
-uint64_t eastOne (uint64_t b) {return (b << 1) & notAFile;}
-uint64_t noEaOne (uint64_t b) {return (b << 9) & notAFile;}
-uint64_t soEaOne (uint64_t b) {return (b >> 7) & notAFile;}
-uint64_t westOne (uint64_t b) {return (b >> 1) & notHFile;}
-uint64_t soWeOne (uint64_t b) {return (b >> 9) & notHFile;}
-uint64_t noWeOne (uint64_t b) {return (b << 7) & notHFile;}
+uint64_t eastOne (uint64_t b) {return (b & notHFile) << 1;}
+uint64_t noEaOne (uint64_t b) {return (b & notHFile) << 9;}
+uint64_t soEaOne (uint64_t b) {return (b & notHFile) >> 7;}
+uint64_t westOne (uint64_t b) {return (b & notAFile) >> 1;}
+uint64_t soWeOne (uint64_t b) {return (b & notAFile) >> 9;}
+uint64_t noWeOne (uint64_t b) {return (b & notAFile) << 7;}
 
 int bitScanForward(uint64_t bb) {
 	const uint64_t debruijn64 = 0x03f79d71b4cb0a89;
@@ -76,28 +77,62 @@ uint64_t bPawnsAble2DblPush(uint64_t bpawns, uint64_t empty) {
 	return wPawnsAble2Push(bpawns, emptyRank6);
 }
 
-void generatePawnMoves(std::vector<Move> &moveList, bool isWhite, uint64_t pawns, uint64_t empty) {
+
+uint64_t wPawnEastAttacks(uint64_t wpawns) {return noEaOne(wpawns);}
+uint64_t wPawnWestAttacks(uint64_t wpawns) {return noWeOne(wpawns);}
+
+uint64_t bPawnEastAttacks(uint64_t bpawns) {return soEaOne(bpawns);}
+uint64_t bPawnWestAttacks(uint64_t bpawns) {return soWeOne(bpawns);}
+
+uint64_t wPawnAnyAttacks(uint64_t wpawns) {
+   return wPawnEastAttacks(wpawns) | wPawnWestAttacks(wpawns);
+}
+
+uint64_t bPawnAnyAttacks(uint64_t bpawns) {
+   return bPawnEastAttacks(bpawns) | bPawnWestAttacks(bpawns);
+}
+
+uint64_t wPawnsAble2CaptureAny(uint64_t wpawns, uint64_t bpieces) {
+   return wpawns & bPawnAnyAttacks(bpieces);
+}
+uint64_t bPawnsAble2CaptureAny(uint64_t bpawns, uint64_t wpieces) {
+   return bpawns & wPawnAnyAttacks(wpieces);
+}
+
+
+void generatePawnMoves(std::vector<Move> &moveList, bool isWhite, uint64_t pawns, uint64_t oppPieces, uint64_t empty) {
+	// Pawn pushes
 	uint64_t singlePushPawns = isWhite ? (wPawnsAble2Push(pawns, empty)) : (bPawnsAble2Push(pawns, empty));
-	while (singlePushPawns != 0) {
-		int idx = bitScanForward(singlePushPawns); // Index of the first least significant 1 bit
-		uint64_t pawnBb = (uint64_t)0x1 << idx; // Bitboard containing the current pawn
-		// prettyPrintBitboard(pawnBb);
-		uint64_t pawnTarget = isWhite ? (wSinglePushTargets(pawnBb, empty)) : (bSinglePushTargets(pawnBb, empty));
-		int targetIdx = bitScanForward(pawnTarget);
-		std::cout << idx << "to" << targetIdx << "\n"; 
-		addMove(idx, targetIdx, 0x0, moveList);
+	uint64_t singlePushTargets = isWhite ? (wSinglePushTargets(singlePushPawns, empty)) : (bSinglePushTargets(singlePushPawns, empty));
+	while (singlePushTargets != 0) { // Loop through 1 bits of target squares
+		int endSquare = bitScanForward(singlePushTargets); 
+		int fromSquare = endSquare + (isWhite ? -8 : 8); // Trace back to origin square
+		addMove(fromSquare, endSquare, 0x0, moveList);
 
-		singlePushPawns &= ~(pawnBb); // Set that bit to 0
+		singlePushTargets &= singlePushTargets - 1; // Set ls1b to 0
 	}
+
 	uint64_t dblPushPawns = isWhite ? (wPawnsAble2DblPush(pawns, empty)) : (bPawnsAble2DblPush(pawns, empty));
-	while (dblPushPawns != 0) {
-		int idx = bitScanForward(dblPushPawns);
-		uint64_t pawnBb = (uint64_t)0x1 << idx;
-		uint64_t pawnTarget = isWhite ? (wDblPushTargets(pawnBb, empty)) : (bDblPushTargets(pawnBb, empty));
-		int targetIdx = bitScanForward(pawnTarget);
-		std::cout << idx << "to" << targetIdx << "\n"; 
-		addMove(idx, targetIdx, 0x0, moveList);
+	std::cout << prettyPrintBitboard(dblPushPawns) << "\n";
+	uint64_t dblPushTargets = isWhite ? (wDblPushTargets(dblPushPawns, empty)) : (bDblPushTargets(dblPushPawns, empty));
+	std::cout << prettyPrintBitboard(dblPushTargets);
+	while (dblPushTargets != 0) {
+		int endSquare = bitScanForward(dblPushTargets); 
+		int fromSquare = endSquare + (isWhite ? -16 : 16);
+		addMove(fromSquare, endSquare, 0x0, moveList);
 
-		dblPushPawns &= ~(pawnBb);
+		dblPushTargets &= dblPushTargets - 1;
 	}
+
+	uint64_t capturePawns = isWhite ? (wPawnsAble2CaptureAny(pawns, oppPieces)) : (bPawnsAble2CaptureAny(pawns, oppPieces));
+	while (capturePawns != 0) {
+		int idx = bitScanForward(capturePawns);
+		uint64_t pawnBb = (uint64_t)0x1 << idx;
+		uint64_t pawnTarget = isWhite ? (wPawnAnyAttacks(pawnBb)) : (bPawnAnyAttacks(pawnBb));
+		int targetIdx = bitScanForward(pawnTarget);
+		addMove(idx, targetIdx, 0x4, moveList);
+
+		capturePawns &= ~(pawnBb);
+	}
+
 }
