@@ -46,11 +46,11 @@ std::string Board::prettyPrint() {
 };
 
 void Board::parseFen(std::string fen) {
-    int row = 0;
-    int col = 0;
+    int rank = 0;
+    int file = 0;
 
     for (auto &ch : fen) {
-        int lerfIdx = (8 * (7 - row)) + (col);
+        int lerfIdx = (8 * (7 - rank)) + (file);
         uint64_t bitboardIdx = (uint64_t)0x1 << lerfIdx;
 
         if (isalpha(ch)) { // Is a piece
@@ -73,18 +73,18 @@ void Board::parseFen(std::string fen) {
                 case 'q':
                     pieceBitboards[nQueen] |= bitboardIdx; break;
                 case 'k':
-                    pieceBitboards[nBishop] |= bitboardIdx; break;
+                    pieceBitboards[nKing] |= bitboardIdx; break;
             }
         }
 
         if (std::isdigit(ch))
-            col += ch - '0'; // Numerical value of digit char
+            file += ch - '0'; // Numerical value of digit char
         else 
-            col++;
+            file++;
         
         if (ch == '/') {
-            col = 0;
-            row++;
+            file = 0;
+            rank++;
         }
     }
 }

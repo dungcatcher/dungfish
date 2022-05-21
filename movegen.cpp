@@ -80,20 +80,30 @@ uint64_t bPawnsAble2DblPush(uint64_t bpawns, uint64_t empty) {
 
 uint64_t wPawnEastAttacks(uint64_t wpawns) {return noEaOne(wpawns);}
 uint64_t wPawnWestAttacks(uint64_t wpawns) {return noWeOne(wpawns);}
-
-uint64_t bPawnEastAttacks(uint64_t bpawns) {return soEaOne(bpawns);}
-uint64_t bPawnWestAttacks(uint64_t bpawns) {return soWeOne(bpawns);}
-
 uint64_t wPawnAnyAttacks(uint64_t wpawns) {
    return wPawnEastAttacks(wpawns) | wPawnWestAttacks(wpawns);
 }
 
+uint64_t bPawnEastAttacks(uint64_t bpawns) {return soEaOne(bpawns);}
+uint64_t bPawnWestAttacks(uint64_t bpawns) {return soWeOne(bpawns);}
 uint64_t bPawnAnyAttacks(uint64_t bpawns) {
    return bPawnEastAttacks(bpawns) | bPawnWestAttacks(bpawns);
 }
 
+uint64_t wPawnsAble2CaptureEast(uint64_t wpawns, uint64_t bpawns) {
+   return wpawns & bPawnWestAttacks(bpawns);
+}
+uint64_t wPawnsAble2CaptureWest(uint64_t wpawns, uint64_t bpawns) {
+   return wpawns & bPawnEastAttacks(bpawns);
+}
 uint64_t wPawnsAble2CaptureAny(uint64_t wpawns, uint64_t bpawns) {
    return wpawns & bPawnAnyAttacks(bpawns);
+}
+uint64_t bPawnsAble2CaptureEast(uint64_t bpawns, uint64_t wpawns) {
+   return bpawns & wPawnWestAttacks(wpawns);
+}
+uint64_t bPawnsAble2CaptureWest(uint64_t bpawns, uint64_t wpawns) {
+   return bpawns & wPawnEastAttacks(wpawns);
 }
 uint64_t bPawnsAble2CaptureAny(uint64_t bpawns, uint64_t wpawns) {
    return bpawns & wPawnAnyAttacks(wpawns);
@@ -122,21 +132,11 @@ void generatePawnMoves(std::vector<Move> &moveList, bool isWhite, uint64_t pawns
 		dblPushTargets &= dblPushTargets - 1;
 	}
 
-	// uint64_t capturePawns = isWhite ? (wPawnsAble2CaptureAny(pawns, oppPieces)) : (bPawnsAble2CaptureAny(pawns, oppPieces));
-	// while (capturePawns != 0) {
-	// 	int idx = bitScanForward(capturePawns);
-	// 	uint64_t pawnBb = (uint64_t)0x1 << idx;
-	// 	uint64_t pawnTarget = isWhite ? (wPawnAnyAttacks(pawnBb)) : (bPawnAnyAttacks(pawnBb));
-	// 	int targetIdx = bitScanForward(pawnTarget);
-	// 	addMove(idx, targetIdx, 0x4, moveList);
-
-	// 	capturePawns &= ~(pawnBb);
-	// }
-
 	// Captures
-	uint64_t capturePawns = isWhite ? (wPawnsAble2CaptureAny(pawns, oppPawns)) : (bPawnsAble2CaptureAny(pawns, oppPawns));
-	uint64_t captureTargetsEast = isWhite ? (wPawnEastAttacks(capturePawns)) : (bPawnEastAttacks(capturePawns));
-	uint64_t captureTargetsWest = isWhite ? (wPawnWestAttacks(capturePawns)) : (bPawnWestAttacks(capturePawns));
+	uint64_t capturePawnsEast = isWhite ? (wPawnsAble2CaptureEast(pawns, oppPawns)) : (bPawnsAble2CaptureEast(pawns, oppPawns));
+	uint64_t capturePawnsWest = isWhite ? (wPawnsAble2CaptureWest(pawns, oppPawns)) : (bPawnsAble2CaptureWest(pawns, oppPawns));
+	uint64_t captureTargetsEast = isWhite ? (wPawnEastAttacks(capturePawnsEast)) : (bPawnEastAttacks(capturePawnsEast));
+	uint64_t captureTargetsWest = isWhite ? (wPawnWestAttacks(capturePawnsWest)) : (bPawnWestAttacks(capturePawnsWest));
 	// East
 	while (captureTargetsEast != 0) {
 		int endSquare = bitScanForward(captureTargetsEast);
@@ -153,11 +153,4 @@ void generatePawnMoves(std::vector<Move> &moveList, bool isWhite, uint64_t pawns
 
 		captureTargetsWest &= captureTargetsWest - 1;
 	}
-	// while (dblPushTargets != 0) {
-	// 	int endSquare = bitScanForward(dblPushTargets); 
-	// 	int fromSquare = endSquare + (isWhite ? -16 : 16);
-	// 	addMove(fromSquare, endSquare, 0x0, moveList);
-
-	// 	dblPushTargets &= dblPushTargets - 1;
-	// }
 }

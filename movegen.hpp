@@ -56,11 +56,15 @@ uint64_t bPawnsAble2DblPush(uint64_t bpawns, uint64_t empty);
 
 uint64_t wPawnEastAttacks(uint64_t wpawns);
 uint64_t wPawnWestAttacks(uint64_t wpawns);
+uint64_t wPawnAnyAttacks(uint64_t wpawns);
 uint64_t bPawnEastAttacks(uint64_t bpawns);
 uint64_t bPawnWestAttacks(uint64_t bpawns);
-uint64_t wPawnAnyAttacks(uint64_t wpawns);
 uint64_t bPawnAnyAttacks(uint64_t bpawns);
+uint64_t wPawnsAble2CaptureEast(uint64_t wpawns, uint64_t bpawns);
+uint64_t wPawnsAble2CaptureWest(uint64_t wpawns, uint64_t bpawns);
 uint64_t wPawnsAble2CaptureAny(uint64_t wpawns, uint64_t bpieces);
+uint64_t bPawnsAble2CaptureEast(uint64_t bpawns, uint64_t wpieces);
+uint64_t bPawnsAble2CaptureWest(uint64_t bpawns, uint64_t wpieces);
 uint64_t bPawnsAble2CaptureAny(uint64_t bpawns, uint64_t wpieces);
 
 void generatePawnMoves(std::vector<Move>& moveList, bool isWhite, uint64_t pawns, uint64_t oppPieces, uint64_t empty);
