@@ -9,8 +9,9 @@ public:
     };
     uint64_t getPieceSet(enumPiece pt);
     uint64_t getOccupied(); // All occupied squares
-
     uint64_t getWhitePawns();
+    uint64_t getBlackPawns();
+    
     std::string getPieceAtLocation(int x, int y);
     std::string prettyPrint();
 

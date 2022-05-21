@@ -10,6 +10,7 @@ uint64_t Board::getPieceSet(enumPiece pt) {return pieceBitboards[pt];}
 uint64_t Board::getOccupied() {return pieceBitboards[nWhite] | pieceBitboards[nBlack];}
 
 uint64_t Board::getWhitePawns() {return pieceBitboards[nPawn] & pieceBitboards[nWhite];}
+uint64_t Board::getBlackPawns() {return pieceBitboards[nPawn] & pieceBitboards[nBlack];}
 
 std::string Board::getPieceAtLocation(int x, int y) {
     y = 7 - y;  // Reverse y value
