@@ -1,8 +1,5 @@
 #include <cstdint>
 
-class Table {
-public:
-    uint64_t knightAttacks[64];
-    Table();
-    void initKnightAttacks();
-};
+extern uint64_t knightAttacks[64];
+void initKnightAttacks();
+void initTables();

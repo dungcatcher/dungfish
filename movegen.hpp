@@ -68,3 +68,4 @@ uint64_t bPawnsAble2CaptureWest(uint64_t bpawns, uint64_t wpieces);
 uint64_t bPawnsAble2CaptureAny(uint64_t bpawns, uint64_t wpieces);
 
 void generatePawnMoves(std::vector<Move>& moveList, bool isWhite, uint64_t pawns, uint64_t oppPieces, uint64_t empty);
+void generateKnightMoves(std::vector<Move> &moveList, uint64_t knights, uint64_t teamPieces);

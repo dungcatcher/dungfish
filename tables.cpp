@@ -1,7 +1,9 @@
 #include "tables.hpp"
 #include "movegen.hpp"
 
-void Table::initKnightAttacks() {
+uint64_t knightAttacks[64];
+
+void initKnightAttacks() {
     for (int sq = 0; sq < 64; sq++) {
         uint64_t sqBb, east, west, attacks;
         sqBb = (uint64_t)0x1 << sq; // Square bitboard
@@ -18,6 +20,6 @@ void Table::initKnightAttacks() {
     }
 }
 
-Table::Table() {
+void initTables() {
     initKnightAttacks();
 }

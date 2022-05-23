@@ -1,4 +1,5 @@
 #include "movegen.hpp"
+#include "tables.hpp"
 
 std::string prettyPrintBitboard(uint64_t bb) {
 	std::bitset<64> bitset(bb);
@@ -152,5 +153,19 @@ void generatePawnMoves(std::vector<Move> &moveList, bool isWhite, uint64_t pawns
 		addMove(fromSquare, endSquare, 0x4, moveList);
 
 		captureTargetsWest &= captureTargetsWest - 1;
+	}
+}
+
+void generateKnightMoves(std::vector<Move> &moveList, uint64_t knights, uint64_t teamPieces) {
+	while (knights != 0) {
+		int fromSquare = bitScanForward(knights);
+		uint64_t pseudoKnightAttacks = knightAttacks[fromSquare];
+		pseudoKnightAttacks &= ~teamPieces;
+		while (pseudoKnightAttacks != 0) {
+			int endSquare = bitScanForward(pseudoKnightAttacks);
+			addMove(fromSquare, endSquare, 0x0, moveList);
+			pseudoKnightAttacks &= pseudoKnightAttacks - 1;
+		}
+		knights &= knights - 1;
 	}
 }

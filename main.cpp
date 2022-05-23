@@ -12,10 +12,11 @@ int main()
     Board board(startFen);
     std::cout << board.prettyPrint();
 
-    Table table;
+    initTables();
 
     std::vector<Move> moveList;
     generatePawnMoves(moveList, true, board.getWhitePawns(), board.getBlackPawns(), ~board.getOccupied());
+    generateKnightMoves(moveList, board.getWhiteKnights(), board.getPieceSet(Board::enumPiece::nWhite));
 
     for (auto &move : moveList) {
         std::cout << move.start << " to " << move.end << " flags: " << move.flags << "\n";

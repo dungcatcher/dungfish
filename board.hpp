@@ -11,6 +11,7 @@ public:
     uint64_t getOccupied(); // All occupied squares
     uint64_t getWhitePawns();
     uint64_t getBlackPawns();
+    uint64_t getWhiteKnights();
     
     std::string getPieceAtLocation(int x, int y);
     std::string prettyPrint();

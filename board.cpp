@@ -11,6 +11,7 @@ uint64_t Board::getOccupied() {return pieceBitboards[nWhite] | pieceBitboards[nB
 
 uint64_t Board::getWhitePawns() {return pieceBitboards[nPawn] & pieceBitboards[nWhite];}
 uint64_t Board::getBlackPawns() {return pieceBitboards[nPawn] & pieceBitboards[nBlack];}
+uint64_t Board::getWhiteKnights() {return pieceBitboards[nKnight] & pieceBitboards[nWhite];}
 
 std::string Board::getPieceAtLocation(int x, int y) {
     y = 7 - y;  // Reverse y value
