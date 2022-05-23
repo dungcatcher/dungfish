@@ -127,7 +127,7 @@ void generatePawnMoves(std::vector<Move> &moveList, bool isWhite, uint64_t pawns
 	while (dblPushTargets != 0) {
 		int endSquare = bitScanForward(dblPushTargets); 
 		int fromSquare = endSquare + (isWhite ? -16 : 16);
-		addMove(fromSquare, endSquare, 0x0, moveList);
+		addMove(fromSquare, endSquare, 0x1, moveList);
 
 		dblPushTargets &= dblPushTargets - 1;
 	}
