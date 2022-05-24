@@ -2,6 +2,7 @@
 #include "movegen.hpp"
 
 uint64_t knightAttacks[64];
+uint64_t bishopMagics[64];
 
 void initKnightAttacks() {
     for (int sq = 0; sq < 64; sq++) {
@@ -20,6 +21,13 @@ void initKnightAttacks() {
     }
 }
 
+void initBishopAttacks() {
+    for (int sq = 0; sq < 64; sq++) {
+        
+    }
+}
+
 void initTables() {
     initKnightAttacks();
+    initBishopAttacks();
 }
