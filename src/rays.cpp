@@ -1,4 +1,5 @@
 #include "rays.hpp"
+#include "movegen.hpp"
 
 uint64_t rays[8][64];  // Contains squares for all directions
 
@@ -13,6 +14,6 @@ void initRays() {
         // West 
         rays[WEST][sq] = ((uint64_t)0x1 << sq) - (((uint64_t)0x1 << (sq & 56)));
         // North-east
-        rays[NORTH_EAST][sq] = 
-    }
+        std::cout << prettyPrintBitboard(rays[NORTH][sq]) << "\n";
+    }   
 }

@@ -5,11 +5,13 @@
 #include "board.hpp"
 #include "movegen.hpp"
 #include "tables.hpp"
+#include "rays.hpp"
 
 int main()
 {
     std::string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
     Board board(startFen);
+    initRays();
     std::cout << board.prettyPrint();
 
     initTables();

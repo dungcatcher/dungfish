@@ -1,5 +1,6 @@
 #include "movegen.hpp"
 #include "tables.hpp"
+#include "bitutils.hpp"
 
 std::string prettyPrintBitboard(uint64_t bb) {
 	std::bitset<64> bitset(bb);
@@ -12,20 +13,6 @@ std::string prettyPrintBitboard(uint64_t bb) {
 	}
 
 	return splitBinaryString;
-}
-
-uint64_t soutOne (uint64_t b) {return  b >> 8;}
-uint64_t nortOne (uint64_t b) {return  b << 8;}
-uint64_t eastOne (uint64_t b) {return (b & notHFile) << 1;}
-uint64_t noEaOne (uint64_t b) {return (b & notHFile) << 9;}
-uint64_t soEaOne (uint64_t b) {return (b & notHFile) >> 7;}
-uint64_t westOne (uint64_t b) {return (b & notAFile) >> 1;}
-uint64_t soWeOne (uint64_t b) {return (b & notAFile) >> 9;}
-uint64_t noWeOne (uint64_t b) {return (b & notAFile) << 7;}
-
-int bitScanForward(uint64_t bb) {
-	const uint64_t debruijn64 = 0x03f79d71b4cb0a89;
-	return index64[((bb ^ (bb-1)) * debruijn64) >> 58];
 }
 
 void addMove(unsigned int start, unsigned int end, unsigned int flags, std::vector<Move>& moveList) {

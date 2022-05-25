@@ -1,8 +1,8 @@
 #include "tables.hpp"
-#include "movegen.hpp"
+#include "bitutils.hpp"
 
 uint64_t knightAttacks[64];
-uint64_t bishopMagics[64];
+uint64_t bishopAttacks[64];
 
 void initKnightAttacks() {
     for (int sq = 0; sq < 64; sq++) {
