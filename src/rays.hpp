@@ -1,4 +1,5 @@
 #include <cstdint>
+#include "bitutils.hpp"
 
 const uint64_t NORTH_A1      = 0x0101010101010100;
 const uint64_t SOUTH_H8      = 0x0080808080808080;

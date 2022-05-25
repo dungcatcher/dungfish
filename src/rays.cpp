@@ -13,7 +13,8 @@ void initRays() {
         rays[EAST][sq] = 2 * ((uint64_t)0x1 << (sq | 7)) - ((uint64_t)0x1 << sq);
         // West 
         rays[WEST][sq] = ((uint64_t)0x1 << sq) - (((uint64_t)0x1 << (sq & 56)));
-        // North-east
-        std::cout << prettyPrintBitboard(rays[NORTH][sq]) << "\n";
-    }   
+        
+        uint64_t coolBb = rays[NORTH][sq] | rays[SOUTH][sq] | rays[EAST][sq] | rays[WEST][sq];
+        std::cout << prettyPrintBitboard(coolBb) << "\n";
+    }
 }

@@ -6,10 +6,16 @@ std::string prettyPrintBitboard(uint64_t bb) {
 	std::bitset<64> bitset(bb);
 	std::string binaryString = bitset.to_string();
 	std::string splitBinaryString = "";
-	for (int i = 0; i < binaryString.length(); i++) {
-		splitBinaryString += binaryString[i];
-		if ((i + 1) % 8 == 0)
-			splitBinaryString += '\n';
+	// for (int i = 0; i < binaryString.length(); i++) {
+	// 	splitBinaryString += binaryString[i];
+	// 	if ((i + 1) % 8 == 0)
+	// 		splitBinaryString += '\n';
+	// }
+	for (int rank = 0; rank < 8; rank++) {
+		for (int file = 7; file >= 0; file--) {
+			splitBinaryString += binaryString[rank * 8 + file];
+		}
+		splitBinaryString += "\n";
 	}
 
 	return splitBinaryString;
