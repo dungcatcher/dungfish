@@ -10,7 +10,7 @@ void initRays() {
         // South
         rays[SOUTH][sq] = SOUTH_H8 >> (63 - sq);
         // East
-        rays[EAST][sq] = 2 * ((uint64_t)0x1 << (sq | 7)) - ((uint64_t)0x1 << sq);
+        rays[EAST][sq] = 2 * ( ((uint64_t)0x1 << (sq | 7)) - ((uint64_t)0x1 << sq) );
         // West 
         rays[WEST][sq] = ((uint64_t)0x1 << sq) - (((uint64_t)0x1 << (sq & 56)));
     }
