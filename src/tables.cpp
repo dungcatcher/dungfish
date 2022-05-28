@@ -1,8 +1,9 @@
 #include "tables.hpp"
 #include "bitutils.hpp"
+#include "movegen.hpp"
 
 uint64_t knightAttacks[64];
-uint64_t bishopAttacks[64];
+uint64_t kingAttacks[64];
 
 void initKnightAttacks() {
     for (int sq = 0; sq < 64; sq++) {
@@ -21,13 +22,18 @@ void initKnightAttacks() {
     }
 }
 
-void initBishopAttacks() {
+void initKingAttacks() {
     for (int sq = 0; sq < 64; sq++) {
-        
+        uint64_t sqBb = (uint64_t)0x1 << sq;
+        uint64_t attacks = eastOne(sqBb) | westOne(sqBb);
+        sqBb |= attacks;
+        attacks |= nortOne(sqBb) | soutOne(sqBb);
+
+        kingAttacks[sq] = attacks;
     }
 }
 
 void initTables() {
     initKnightAttacks();
-    initBishopAttacks();
+    initKingAttacks();
 }

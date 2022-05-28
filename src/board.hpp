@@ -23,6 +23,8 @@ public:
     uint64_t getBlackRooks();
     uint64_t getWhiteQueens();
     uint64_t getBlackQueens();
+    uint64_t getWhiteKings();
+    uint64_t getBlackKings();
     
     std::string getPieceAtLocation(int x, int y);
     std::string prettyPrint();

@@ -18,10 +18,11 @@ int main()
 
     std::vector<Move> moveList;
     generatePawnMoves(moveList, true, board.getWhitePawns(), board.getBlackPawns(), ~board.getOccupied());
-    generateKnightMoves(moveList, board.getWhiteKnights(), board.getPieceSet(Board::enumPiece::nWhite));
+    generateKnightMoves(moveList, board.getWhiteKnights(), board.getWhite());
     generateBishopMoves(moveList, board.getWhiteBishops(), board.getWhite(), board.getBlack());
     generateRookMoves(moveList, board.getWhiteRooks(), board.getWhite(), board.getBlack());
     generateQueenMoves(moveList, board.getWhiteQueens(), board.getWhite(), board.getBlack());
+    generateKingMoves(moveList, board.getWhiteKings(), board.getWhite());
 
     for (auto &move : moveList) {
         std::string start = coordinateIndexTable[move.start];

@@ -62,3 +62,4 @@ uint64_t generateQueenAttacks(uint64_t blockers, int square);
 void generateBishopMoves(std::vector<Move> &moveList, uint64_t bishops, uint64_t teamPieces, uint64_t enemyPieces);
 void generateRookMoves(std::vector<Move> &moveList, uint64_t rooks, uint64_t teamPieces, uint64_t enemyPieces);
 void generateQueenMoves(std::vector<Move> &moveList, uint64_t queens, uint64_t teamPieces, uint64_t enemyPieces);
+void generateKingMoves(std::vector<Move> &moveList, uint64_t king, uint64_t teamPieces);

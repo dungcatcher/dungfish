@@ -198,7 +198,6 @@ uint64_t generateRookAttacks(uint64_t blockers, int square) {
 	attacks |= getPositiveRayAttacks(blockers, square, EAST);
 	attacks |= getPositiveRayAttacks(blockers, square, WEST);
 	attacks |= getNegativeRayAttacks(blockers, square, SOUTH);
-	std::cout << prettyPrintBitboard(attacks) << "\n";
 
 	return attacks;
 }
@@ -257,4 +256,18 @@ void generateRookMoves(std::vector<Move> &moveList, uint64_t rooks, uint64_t tea
 void generateQueenMoves(std::vector<Move> &moveList, uint64_t queens, uint64_t teamPieces, uint64_t enemyPieces) {
 	generateBishopMoves(moveList, queens, teamPieces, enemyPieces);
 	generateRookMoves(moveList, queens, teamPieces, enemyPieces);
+}
+
+void generateKingMoves(std::vector<Move> &moveList, uint64_t king, uint64_t teamPieces) {
+	while (king != 0) {
+		int fromSquare = bitScanForward(king);
+		uint64_t pseudoKingAttacks = kingAttacks[fromSquare];
+		pseudoKingAttacks &= ~teamPieces;
+		while (pseudoKingAttacks != 0) {
+			int endSquare = bitScanForward(pseudoKingAttacks);
+			addMove(fromSquare, endSquare, 0x0, moveList);
+			pseudoKingAttacks &= pseudoKingAttacks - 1;
+		}
+		king &= king - 1;
+	}
 }

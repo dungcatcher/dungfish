@@ -20,6 +20,8 @@ uint64_t Board::getWhiteRooks() {return pieceBitboards[nRook] & pieceBitboards[n
 uint64_t Board::getBlackRooks() {return pieceBitboards[nRook] & pieceBitboards[nBlack];}
 uint64_t Board::getWhiteQueens() {return pieceBitboards[nQueen] & pieceBitboards[nWhite];}
 uint64_t Board::getBlackQueens() {return pieceBitboards[nQueen] & pieceBitboards[nBlack];}
+uint64_t Board::getWhiteKings() {return pieceBitboards[nKing] & pieceBitboards[nWhite];}
+uint64_t Board::getBlackKings() {return pieceBitboards[nKing] & pieceBitboards[nBlack];}
 
 std::string Board::getPieceAtLocation(int x, int y) {
     y = 7 - y;  // Reverse y value
