@@ -8,10 +8,18 @@ Board::Board(std::string fen) {
 
 uint64_t Board::getPieceSet(enumPiece pt) {return pieceBitboards[pt];}
 uint64_t Board::getOccupied() {return pieceBitboards[nWhite] | pieceBitboards[nBlack];}
-
+uint64_t Board::getWhite() {return pieceBitboards[nWhite];}
+uint64_t Board::getBlack() {return pieceBitboards[nBlack];}
 uint64_t Board::getWhitePawns() {return pieceBitboards[nPawn] & pieceBitboards[nWhite];}
 uint64_t Board::getBlackPawns() {return pieceBitboards[nPawn] & pieceBitboards[nBlack];}
 uint64_t Board::getWhiteKnights() {return pieceBitboards[nKnight] & pieceBitboards[nWhite];}
+uint64_t Board::getBlackKnights() {return pieceBitboards[nKnight] & pieceBitboards[nBlack];}
+uint64_t Board::getWhiteBishops() {return pieceBitboards[nBishop] & pieceBitboards[nWhite];}
+uint64_t Board::getBlackBishops() {return pieceBitboards[nBishop] & pieceBitboards[nBlack];}
+uint64_t Board::getWhiteRooks() {return pieceBitboards[nRook] & pieceBitboards[nWhite];}
+uint64_t Board::getBlackRooks() {return pieceBitboards[nRook] & pieceBitboards[nBlack];}
+uint64_t Board::getWhiteQueens() {return pieceBitboards[nQueen] & pieceBitboards[nWhite];}
+uint64_t Board::getBlackQueens() {return pieceBitboards[nQueen] & pieceBitboards[nBlack];}
 
 std::string Board::getPieceAtLocation(int x, int y) {
     y = 7 - y;  // Reverse y value

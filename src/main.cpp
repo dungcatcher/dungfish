@@ -19,9 +19,14 @@ int main()
     std::vector<Move> moveList;
     generatePawnMoves(moveList, true, board.getWhitePawns(), board.getBlackPawns(), ~board.getOccupied());
     generateKnightMoves(moveList, board.getWhiteKnights(), board.getPieceSet(Board::enumPiece::nWhite));
+    generateBishopMoves(moveList, board.getWhiteBishops(), board.getWhite(), board.getBlack());
+    generateRookMoves(moveList, board.getWhiteRooks(), board.getWhite(), board.getBlack());
+    generateQueenMoves(moveList, board.getWhiteQueens(), board.getWhite(), board.getBlack());
 
     for (auto &move : moveList) {
-        std::cout << move.start << " to " << move.end << " flags: " << move.flags << "\n";
+        std::string start = coordinateIndexTable[move.start];
+        std::string end = coordinateIndexTable[move.end];
+        std::cout << start << " to " << end << " flags: " << move.flags << "\n";
     }
 
     return 0;

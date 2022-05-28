@@ -157,3 +157,104 @@ void generateKnightMoves(std::vector<Move> &moveList, uint64_t knights, uint64_t
 		knights &= knights - 1;
 	}
 }
+
+// Sliding pieces
+
+uint64_t getPositiveRayAttacks(uint64_t occupied, int square, Direction dir) {
+	uint64_t attacks = rays[dir][square];
+	uint64_t blockers = attacks & occupied; // All pieces in the way of the ray
+	if (blockers) {
+		square = bitScanForward(blockers);
+		attacks ^= rays[dir][square];
+	}
+	return attacks;
+}
+
+uint64_t getNegativeRayAttacks(uint64_t occupied, int square, Direction dir) {
+	uint64_t attacks = rays[dir][square];
+	uint64_t blockers = attacks & occupied;
+	if (blockers) {
+		square = bitScanReverse(blockers);
+		attacks ^= rays[dir][square];
+	}
+	return attacks;
+}
+
+uint64_t generateBishopAttacks(uint64_t blockers, int square) {
+	uint64_t attacks = 0;
+	
+	attacks |= getPositiveRayAttacks(blockers, square, NORTH_EAST);
+	attacks |= getPositiveRayAttacks(blockers, square, NORTH_WEST);
+	attacks |= getNegativeRayAttacks(blockers, square, SOUTH_EAST);
+	attacks |= getNegativeRayAttacks(blockers, square, SOUTH_WEST);
+
+	return attacks;
+}
+
+uint64_t generateRookAttacks(uint64_t blockers, int square) {
+	uint64_t attacks = 0;
+
+	attacks |= getPositiveRayAttacks(blockers, square, NORTH);
+	attacks |= getPositiveRayAttacks(blockers, square, EAST);
+	attacks |= getPositiveRayAttacks(blockers, square, WEST);
+	attacks |= getNegativeRayAttacks(blockers, square, SOUTH);
+	std::cout << prettyPrintBitboard(attacks) << "\n";
+
+	return attacks;
+}
+
+uint64_t generateQueenAttacks(uint64_t blockers, int square) {
+	uint64_t attacks = generateRookAttacks(blockers, square) | generateBishopAttacks(blockers, square);
+	
+	return attacks;
+}
+
+// 🤢🔫
+void generateBishopMoves(std::vector<Move> &moveList, uint64_t bishops, uint64_t teamPieces, uint64_t enemyPieces) {
+	uint64_t blockers = teamPieces | enemyPieces;
+
+	while (bishops) { // Loop through bishops and generate their attacks
+		int fromSquare = bitScanForward(bishops);
+		uint64_t bishopAttacks = generateBishopAttacks(blockers, fromSquare);
+		while (bishopAttacks) {
+			int endSquare = bitScanForward(bishopAttacks);
+			uint64_t endSquareBits = (uint64_t)0x1 << endSquare;
+			// Check if attacks are on pieces or empty squares
+			if (blockers & endSquareBits) {
+				if (enemyPieces & endSquareBits)
+					addMove(fromSquare, endSquare, 0x4, moveList);
+			}
+			else
+				addMove(fromSquare, endSquare, 0x0, moveList);
+			bishopAttacks &= bishopAttacks - 1;
+		}
+		bishops &= bishops - 1;
+	}
+}
+
+void generateRookMoves(std::vector<Move> &moveList, uint64_t rooks, uint64_t teamPieces, uint64_t enemyPieces) {
+	uint64_t blockers = teamPieces | enemyPieces;
+
+	while (rooks) {
+		int fromSquare = bitScanForward(rooks);
+		uint64_t rookAttacks = generateRookAttacks(blockers, fromSquare);
+		while (rookAttacks) {
+			int endSquare = bitScanForward(rookAttacks);
+			uint64_t endSquareBits = (uint64_t)0x1 << endSquare;
+			// Check if attacks are on pieces or empty squares
+			if (blockers & endSquareBits) {
+				if (enemyPieces & endSquareBits)
+					addMove(fromSquare, endSquare, 0x4, moveList);
+			}
+			else
+				addMove(fromSquare, endSquare, 0x0, moveList);
+			rookAttacks &= rookAttacks - 1;
+		}
+		rooks &= rooks - 1;
+	}
+}
+
+void generateQueenMoves(std::vector<Move> &moveList, uint64_t queens, uint64_t teamPieces, uint64_t enemyPieces) {
+	generateBishopMoves(moveList, queens, teamPieces, enemyPieces);
+	generateRookMoves(moveList, queens, teamPieces, enemyPieces);
+}

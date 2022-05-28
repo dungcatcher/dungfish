@@ -33,8 +33,8 @@ void initRays() {
     }
 
 
-    for (int sq = 0; sq < 64; sq++) {
-        uint64_t coolBb = rays[NORTH][sq] | rays[SOUTH][sq] | rays[EAST][sq] | rays[WEST][sq] | rays[NORTH_EAST][sq] | rays[NORTH_WEST][sq] | rays[SOUTH_EAST][sq] | rays[SOUTH_WEST][sq];
-        std::cout << prettyPrintBitboard(coolBb) << "\n";
-    }
+    // for (int sq = 0; sq < 64; sq++) {
+    //     uint64_t coolBb = rays[NORTH][sq] | rays[SOUTH][sq] | rays[EAST][sq] | rays[WEST][sq] | rays[NORTH_EAST][sq] | rays[NORTH_WEST][sq] | rays[SOUTH_EAST][sq] | rays[SOUTH_WEST][sq];
+    //     std::cout << prettyPrintBitboard(coolBb) << "\n";
+    // }
 }

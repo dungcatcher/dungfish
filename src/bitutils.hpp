@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>
 
 const uint64_t notAFile = 0xfefefefefefefefe; // ~0x0101010101010101
@@ -31,3 +33,4 @@ const int index64[64] = {
  * @return index (0..63) of least significant one bit
  */
 int bitScanForward(uint64_t bb);
+int bitScanReverse(uint64_t bb);

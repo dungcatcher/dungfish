@@ -14,3 +14,13 @@ int bitScanForward(uint64_t bb) {
 	return index64[((bb ^ (bb-1)) * debruijn64) >> 58];
 }
 
+int bitScanReverse(uint64_t bb) {
+	const uint64_t debruijn64 = 0x03f79d71b4cb0a89;
+	bb |= bb >> 1; 
+	bb |= bb >> 2;
+	bb |= bb >> 4;
+	bb |= bb >> 8;
+	bb |= bb >> 16;
+	bb |= bb >> 32;
+	return index64[(bb * debruijn64) >> 58];
+}
