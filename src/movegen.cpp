@@ -61,9 +61,9 @@ uint64_t bPawnsAble2Push(uint64_t bpawns, uint64_t empty) {
 }
 
 uint64_t bPawnsAble2DblPush(uint64_t bpawns, uint64_t empty) {
-	const uint64_t rank5 = 0x000000FF000000;
+	const uint64_t rank5 = 0x000000FF00000000;
 	uint64_t emptyRank6 = nortOne(empty & rank5) & empty;
-	return wPawnsAble2Push(bpawns, emptyRank6);
+	return bPawnsAble2Push(bpawns, emptyRank6);
 }
 
 
@@ -117,6 +117,7 @@ void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
 
 	uint64_t dblPushPawns = board.turn ? (wPawnsAble2DblPush(pawns, empty)) : (bPawnsAble2DblPush(pawns, empty));
 	uint64_t dblPushTargets = board.turn ? (wDblPushTargets(dblPushPawns, empty)) : (bDblPushTargets(dblPushPawns, empty));
+	std::cout << prettyPrintBitboard(dblPushPawns) << "\n";
 	while (dblPushTargets != 0) {
 		int endSquare = bitScanForward(dblPushTargets); 
 		int fromSquare = endSquare + (board.turn ? -16 : 16);
@@ -273,10 +274,13 @@ void generateQueenMoves(std::vector<Move> &moveList, const Board& board) {
 
 void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
 	uint64_t king = board.turn ? board.getWhiteKings() : board.getBlackKings();
+	int kingPosition = bitScanForward(king);
+	uint64_t rooks = board.turn ? board.getWhiteRooks() : board.getBlackRooks();
 	uint64_t teamPieces = board.turn ? board.getWhite() : board.getBlack();
+	uint64_t empty = ~board.getOccupied();
 
 	while (king != 0) {
-		int fromSquare = bitScanForward(king);
+		int fromSquare = kingPosition;
 		uint64_t pseudoKingAttacks = kingAttacks[fromSquare];
 		pseudoKingAttacks &= ~teamPieces;
 		while (pseudoKingAttacks != 0) {
@@ -286,4 +290,22 @@ void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
 		}
 		king &= king - 1;
 	}
+	// Castling
+	if (board.turn) {
+		if (board.whiteCastleK)
+			if (board.whiteCastlingKObstructions & empty) // Castling squares are empty and rook is there
+				addMove(kingPosition, board.whiteCastlingKSquare, 0x2, moveList);
+		if (board.whiteCastleQ)
+			if (board.whiteCastlingQObstructions & empty)
+				addMove(kingPosition, board.whiteCastlingQSquare, 0x2, moveList);
+	}
+	else {
+		if (board.blackCastleK)
+			if (board.blackCastlingKObstructions & empty)
+				addMove(kingPosition, board.blackCastlingKSquare, 0x2, moveList);
+		if (board.blackCastleQ)
+			if (board.blackCastlingQObstructions & empty)
+				addMove(kingPosition, board.blackCastlingQSquare, 0x2, moveList);
+	}
+
 }

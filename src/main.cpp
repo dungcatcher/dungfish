@@ -9,9 +9,11 @@
 
 int main()
 {
-    std::string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+    std::string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK3";
     Board board(startFen);
+    board.turn = 1;
     initRays();
+
     std::cout << board.prettyPrint();
 
     initTables();
