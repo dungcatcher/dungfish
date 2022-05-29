@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "rays.hpp"
+#include "board.hpp"
 
 struct Move {
     unsigned int start; // Number from 0-63 (lerf)
@@ -50,16 +51,16 @@ uint64_t bPawnsAble2CaptureEast(uint64_t bpawns, uint64_t wpieces);
 uint64_t bPawnsAble2CaptureWest(uint64_t bpawns, uint64_t wpieces);
 uint64_t bPawnsAble2CaptureAny(uint64_t bpawns, uint64_t wpieces);
 
-void generatePawnMoves(std::vector<Move>& moveList, bool isWhite, uint64_t pawns, uint64_t oppPieces, uint64_t empty);
-void generateKnightMoves(std::vector<Move> &moveList, uint64_t knights, uint64_t teamPieces);
-
 uint64_t getPositiveRayAttacks(uint64_t occupied, int square, Direction dir);
 uint64_t getNegativeRayAttacks(uint64_t occupied, int square, Direction dir);
 
 uint64_t generateBishopAttacks(uint64_t blockers, int square);
 uint64_t generateRookAttacks(uint64_t blockers, int square);
 uint64_t generateQueenAttacks(uint64_t blockers, int square);
-void generateBishopMoves(std::vector<Move> &moveList, uint64_t bishops, uint64_t teamPieces, uint64_t enemyPieces);
-void generateRookMoves(std::vector<Move> &moveList, uint64_t rooks, uint64_t teamPieces, uint64_t enemyPieces);
-void generateQueenMoves(std::vector<Move> &moveList, uint64_t queens, uint64_t teamPieces, uint64_t enemyPieces);
-void generateKingMoves(std::vector<Move> &moveList, uint64_t king, uint64_t teamPieces);
+
+void generatePawnMoves(std::vector<Move>& moveList, const Board& board);
+void generateKnightMoves(std::vector<Move> &moveList, const Board& board);
+void generateBishopMoves(std::vector<Move> &moveList, const Board& board);
+void generateRookMoves(std::vector<Move> &moveList, const Board& board);
+void generateQueenMoves(std::vector<Move> &moveList, const Board& board);
+void generateKingMoves(std::vector<Move> &moveList, const Board& board);

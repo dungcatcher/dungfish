@@ -99,37 +99,41 @@ uint64_t bPawnsAble2CaptureAny(uint64_t bpawns, uint64_t wpawns) {
 }
 
 
-void generatePawnMoves(std::vector<Move> &moveList, bool isWhite, uint64_t pawns, uint64_t oppPawns, uint64_t empty) {
+void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
+	uint64_t pawns = board.turn ? board.getWhitePawns() : board.getBlackPawns();
+	uint64_t oppPawns = board.turn ? board.getBlackPawns() : board.getWhitePawns();
+	uint64_t empty = ~board.getOccupied();
+
 	// Pawn pushes
-	uint64_t singlePushPawns = isWhite ? (wPawnsAble2Push(pawns, empty)) : (bPawnsAble2Push(pawns, empty));
-	uint64_t singlePushTargets = isWhite ? (wSinglePushTargets(singlePushPawns, empty)) : (bSinglePushTargets(singlePushPawns, empty));
+	uint64_t singlePushPawns = board.turn ? (wPawnsAble2Push(pawns, empty)) : (bPawnsAble2Push(pawns, empty));
+	uint64_t singlePushTargets = board.turn ? (wSinglePushTargets(singlePushPawns, empty)) : (bSinglePushTargets(singlePushPawns, empty));
 	while (singlePushTargets != 0) { // Loop through 1 bits of target squares
 		int endSquare = bitScanForward(singlePushTargets); 
-		int fromSquare = endSquare + (isWhite ? -8 : 8); // Trace back to origin square
+		int fromSquare = endSquare + (board.turn ? -8 : 8); // Trace back to origin square
 		addMove(fromSquare, endSquare, 0x0, moveList);
 
 		singlePushTargets &= singlePushTargets - 1; // Set ls1b to 0
 	}
 
-	uint64_t dblPushPawns = isWhite ? (wPawnsAble2DblPush(pawns, empty)) : (bPawnsAble2DblPush(pawns, empty));
-	uint64_t dblPushTargets = isWhite ? (wDblPushTargets(dblPushPawns, empty)) : (bDblPushTargets(dblPushPawns, empty));
+	uint64_t dblPushPawns = board.turn ? (wPawnsAble2DblPush(pawns, empty)) : (bPawnsAble2DblPush(pawns, empty));
+	uint64_t dblPushTargets = board.turn ? (wDblPushTargets(dblPushPawns, empty)) : (bDblPushTargets(dblPushPawns, empty));
 	while (dblPushTargets != 0) {
 		int endSquare = bitScanForward(dblPushTargets); 
-		int fromSquare = endSquare + (isWhite ? -16 : 16);
+		int fromSquare = endSquare + (board.turn ? -16 : 16);
 		addMove(fromSquare, endSquare, 0x1, moveList);
 
 		dblPushTargets &= dblPushTargets - 1;
 	}
 
 	// Captures
-	uint64_t capturePawnsEast = isWhite ? (wPawnsAble2CaptureEast(pawns, oppPawns)) : (bPawnsAble2CaptureEast(pawns, oppPawns));
-	uint64_t capturePawnsWest = isWhite ? (wPawnsAble2CaptureWest(pawns, oppPawns)) : (bPawnsAble2CaptureWest(pawns, oppPawns));
-	uint64_t captureTargetsEast = isWhite ? (wPawnEastAttacks(capturePawnsEast)) : (bPawnEastAttacks(capturePawnsEast));
-	uint64_t captureTargetsWest = isWhite ? (wPawnWestAttacks(capturePawnsWest)) : (bPawnWestAttacks(capturePawnsWest));
+	uint64_t capturePawnsEast = board.turn ? (wPawnsAble2CaptureEast(pawns, oppPawns)) : (bPawnsAble2CaptureEast(pawns, oppPawns));
+	uint64_t capturePawnsWest = board.turn ? (wPawnsAble2CaptureWest(pawns, oppPawns)) : (bPawnsAble2CaptureWest(pawns, oppPawns));
+	uint64_t captureTargetsEast = board.turn ? (wPawnEastAttacks(capturePawnsEast)) : (bPawnEastAttacks(capturePawnsEast));
+	uint64_t captureTargetsWest = board.turn ? (wPawnWestAttacks(capturePawnsWest)) : (bPawnWestAttacks(capturePawnsWest));
 	// East
 	while (captureTargetsEast != 0) {
 		int endSquare = bitScanForward(captureTargetsEast);
-		int fromSquare = endSquare + (isWhite ? -9 : 9);
+		int fromSquare = endSquare + (board.turn ? -9 : 9);
 		addMove(fromSquare, endSquare, 0x4, moveList);
 
 		captureTargetsEast &= captureTargetsEast - 1;
@@ -137,14 +141,17 @@ void generatePawnMoves(std::vector<Move> &moveList, bool isWhite, uint64_t pawns
 	// West
 	while (captureTargetsWest != 0) {
 		int endSquare = bitScanForward(captureTargetsWest);
-		int fromSquare = endSquare + (isWhite ? -7 : 7);
+		int fromSquare = endSquare + (board.turn ? -7 : 7);
 		addMove(fromSquare, endSquare, 0x4, moveList);
 
 		captureTargetsWest &= captureTargetsWest - 1;
 	}
 }
 
-void generateKnightMoves(std::vector<Move> &moveList, uint64_t knights, uint64_t teamPieces) {
+void generateKnightMoves(std::vector<Move> &moveList, const Board& board) {
+	uint64_t knights = board.turn ? board.getWhiteKnights() : board.getBlackKnights();
+	const uint64_t teamPieces = board.turn ? board.getWhite() : board.getBlack();
+
 	while (knights != 0) {
 		int fromSquare = bitScanForward(knights);
 		uint64_t pseudoKnightAttacks = knightAttacks[fromSquare];
@@ -209,7 +216,10 @@ uint64_t generateQueenAttacks(uint64_t blockers, int square) {
 }
 
 // 🤢🔫
-void generateBishopMoves(std::vector<Move> &moveList, uint64_t bishops, uint64_t teamPieces, uint64_t enemyPieces) {
+void generateBishopMoves(std::vector<Move> &moveList, const Board& board) {
+	uint64_t bishops = board.turn ? board.getWhiteBishops() : board.getBlackBishops();
+	uint64_t teamPieces = board.turn ? board.getWhite() : board.getBlack();
+	uint64_t enemyPieces = board.turn ? board.getBlack() : board.getWhite();
 	uint64_t blockers = teamPieces | enemyPieces;
 
 	while (bishops) { // Loop through bishops and generate their attacks
@@ -231,7 +241,10 @@ void generateBishopMoves(std::vector<Move> &moveList, uint64_t bishops, uint64_t
 	}
 }
 
-void generateRookMoves(std::vector<Move> &moveList, uint64_t rooks, uint64_t teamPieces, uint64_t enemyPieces) {
+void generateRookMoves(std::vector<Move> &moveList, const Board& board) {
+	uint64_t rooks = board.turn ? board.getWhiteRooks() : board.getBlackRooks();
+	uint64_t teamPieces = board.turn ? board.getWhite() : board.getBlack();
+	uint64_t enemyPieces = board.turn ? board.getBlack() : board.getWhite();
 	uint64_t blockers = teamPieces | enemyPieces;
 
 	while (rooks) {
@@ -253,12 +266,15 @@ void generateRookMoves(std::vector<Move> &moveList, uint64_t rooks, uint64_t tea
 	}
 }
 
-void generateQueenMoves(std::vector<Move> &moveList, uint64_t queens, uint64_t teamPieces, uint64_t enemyPieces) {
-	generateBishopMoves(moveList, queens, teamPieces, enemyPieces);
-	generateRookMoves(moveList, queens, teamPieces, enemyPieces);
+void generateQueenMoves(std::vector<Move> &moveList, const Board& board) {
+	generateBishopMoves(moveList, board);
+	generateRookMoves(moveList, board);
 }
 
-void generateKingMoves(std::vector<Move> &moveList, uint64_t king, uint64_t teamPieces) {
+void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
+	uint64_t king = board.turn ? board.getWhiteKings() : board.getBlackKings();
+	uint64_t teamPieces = board.turn ? board.getWhite() : board.getBlack();
+
 	while (king != 0) {
 		int fromSquare = bitScanForward(king);
 		uint64_t pseudoKingAttacks = kingAttacks[fromSquare];

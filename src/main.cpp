@@ -17,12 +17,12 @@ int main()
     initTables();
 
     std::vector<Move> moveList;
-    generatePawnMoves(moveList, true, board.getWhitePawns(), board.getBlackPawns(), ~board.getOccupied());
-    generateKnightMoves(moveList, board.getWhiteKnights(), board.getWhite());
-    generateBishopMoves(moveList, board.getWhiteBishops(), board.getWhite(), board.getBlack());
-    generateRookMoves(moveList, board.getWhiteRooks(), board.getWhite(), board.getBlack());
-    generateQueenMoves(moveList, board.getWhiteQueens(), board.getWhite(), board.getBlack());
-    generateKingMoves(moveList, board.getWhiteKings(), board.getWhite());
+    generatePawnMoves(moveList, board);
+    generateKnightMoves(moveList, board);
+    generateBishopMoves(moveList, board);
+    generateRookMoves(moveList, board);
+    generateQueenMoves(moveList, board);
+    generateKingMoves(moveList, board);
 
     for (auto &move : moveList) {
         std::string start = coordinateIndexTable[move.start];
