@@ -9,7 +9,7 @@
 
 int main()
 {
-    std::string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK3";
+    std::string startFen = "rnbqkbnr/PPPPPPPP/8/8/8/8/PPPPPPPP/RNBQK3";
     Board board(startFen);
     board.turn = 1;
     initRays();
@@ -19,6 +19,8 @@ int main()
     initTables();
 
     std::vector<Move> moveList;
+    moveList.reserve(256);
+
     generatePawnMoves(moveList, board);
     generateKnightMoves(moveList, board);
     generateBishopMoves(moveList, board);

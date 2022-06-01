@@ -1,4 +1,5 @@
 #include "movegen.hpp"
+#include "board.hpp"
 #include "tables.hpp"
 #include "bitutils.hpp"
 
@@ -22,6 +23,16 @@ void addMove(unsigned int start, unsigned int end, unsigned int flags, std::vect
 	move.end = end;
 	move.flags = flags;
 	moveList.push_back(move);
+}
+
+void addPromotion(unsigned int start, unsigned int end, unsigned int flags, std::vector<Move>& moveList) {
+	for (auto &piece : promotionPieces) {
+		Move move;
+		move.start = start;
+		move.end = end;
+		move.flags = piece | flags;
+		moveList.push_back(move);
+	}
 }
 
 // Pawns
@@ -79,29 +90,31 @@ uint64_t bPawnAnyAttacks(uint64_t bpawns) {
    return bPawnEastAttacks(bpawns) | bPawnWestAttacks(bpawns);
 }
 
-uint64_t wPawnsAble2CaptureEast(uint64_t wpawns, uint64_t bpawns) {
-   return wpawns & bPawnWestAttacks(bpawns);
+uint64_t wPawnsAble2CaptureEast(uint64_t wpawns, uint64_t bpieces) {
+   return wpawns & bPawnWestAttacks(bpieces);
 }
-uint64_t wPawnsAble2CaptureWest(uint64_t wpawns, uint64_t bpawns) {
-   return wpawns & bPawnEastAttacks(bpawns);
+uint64_t wPawnsAble2CaptureWest(uint64_t wpawns, uint64_t bpieces) {
+   return wpawns & bPawnEastAttacks(bpieces);
 }
-uint64_t wPawnsAble2CaptureAny(uint64_t wpawns, uint64_t bpawns) {
-   return wpawns & bPawnAnyAttacks(bpawns);
+uint64_t wPawnsAble2CaptureAny(uint64_t wpawns, uint64_t bpieces) {
+   return wpawns & bPawnAnyAttacks(bpieces);
 }
-uint64_t bPawnsAble2CaptureEast(uint64_t bpawns, uint64_t wpawns) {
-   return bpawns & wPawnWestAttacks(wpawns);
+uint64_t bPawnsAble2CaptureEast(uint64_t bpawns, uint64_t wpieces) {
+   return bpawns & wPawnWestAttacks(wpieces);
 }
-uint64_t bPawnsAble2CaptureWest(uint64_t bpawns, uint64_t wpawns) {
-   return bpawns & wPawnEastAttacks(wpawns);
+uint64_t bPawnsAble2CaptureWest(uint64_t bpawns, uint64_t wpieces) {
+   return bpawns & wPawnEastAttacks(wpieces);
 }
-uint64_t bPawnsAble2CaptureAny(uint64_t bpawns, uint64_t wpawns) {
-   return bpawns & wPawnAnyAttacks(wpawns);
+uint64_t bPawnsAble2CaptureAny(uint64_t bpawns, uint64_t wpieces) {
+   return bpawns & wPawnAnyAttacks(wpieces);
 }
 
 
 void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
-	uint64_t pawns = board.turn ? board.getWhitePawns() : board.getBlackPawns();
-	uint64_t oppPawns = board.turn ? board.getBlackPawns() : board.getWhitePawns();
+	uint64_t promoRank = board.turn ? 0x00FF000000000000 : 0x000000000000FF00;
+	uint64_t pawns = (board.turn ? board.getWhitePawns() : board.getBlackPawns()) & ~promoRank;
+	uint64_t promoPawns = (board.turn ? board.getWhitePawns() : board.getBlackPawns()) & promoRank;
+	uint64_t oppPieces = board.turn ? board.getBlack() : board.getWhite();
 	uint64_t empty = ~board.getOccupied();
 
 	// Pawn pushes
@@ -117,7 +130,6 @@ void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
 
 	uint64_t dblPushPawns = board.turn ? (wPawnsAble2DblPush(pawns, empty)) : (bPawnsAble2DblPush(pawns, empty));
 	uint64_t dblPushTargets = board.turn ? (wDblPushTargets(dblPushPawns, empty)) : (bDblPushTargets(dblPushPawns, empty));
-	std::cout << prettyPrintBitboard(dblPushPawns) << "\n";
 	while (dblPushTargets != 0) {
 		int endSquare = bitScanForward(dblPushTargets); 
 		int fromSquare = endSquare + (board.turn ? -16 : 16);
@@ -127,8 +139,8 @@ void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
 	}
 
 	// Captures
-	uint64_t capturePawnsEast = board.turn ? (wPawnsAble2CaptureEast(pawns, oppPawns)) : (bPawnsAble2CaptureEast(pawns, oppPawns));
-	uint64_t capturePawnsWest = board.turn ? (wPawnsAble2CaptureWest(pawns, oppPawns)) : (bPawnsAble2CaptureWest(pawns, oppPawns));
+	uint64_t capturePawnsEast = board.turn ? (wPawnsAble2CaptureEast(pawns, oppPieces)) : (bPawnsAble2CaptureEast(pawns, oppPieces));
+	uint64_t capturePawnsWest = board.turn ? (wPawnsAble2CaptureWest(pawns, oppPieces)) : (bPawnsAble2CaptureWest(pawns, oppPieces));
 	uint64_t captureTargetsEast = board.turn ? (wPawnEastAttacks(capturePawnsEast)) : (bPawnEastAttacks(capturePawnsEast));
 	uint64_t captureTargetsWest = board.turn ? (wPawnWestAttacks(capturePawnsWest)) : (bPawnWestAttacks(capturePawnsWest));
 	// East
@@ -146,6 +158,40 @@ void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
 		addMove(fromSquare, endSquare, 0x4, moveList);
 
 		captureTargetsWest &= captureTargetsWest - 1;
+	}
+
+	// Promotions
+
+	uint64_t singlePushPromo = board.turn ? (wPawnsAble2Push(promoPawns, empty)) : (bPawnsAble2Push(promoPawns, empty));
+	uint64_t singlePushPromoTargets = board.turn ? (wSinglePushTargets(singlePushPromo, empty)) : (bSinglePushTargets(singlePushPromo, empty));
+	while (singlePushPromoTargets != 0) { // Loop through 1 bits of target squares
+		int endSquare = bitScanForward(singlePushPromoTargets); 
+		int fromSquare = endSquare + (board.turn ? -8 : 8); // Trace back to origin square
+		addPromotion(fromSquare, endSquare, 0x0, moveList);
+
+		singlePushPromoTargets &= singlePushPromoTargets - 1; // Set ls1b to 0
+	}
+
+	// Promotion captures
+	uint64_t eastPromoCaptures = board.turn ? (wPawnsAble2CaptureEast(promoPawns, oppPieces)) : (bPawnsAble2CaptureEast(promoPawns, oppPieces));
+	uint64_t westPromoCaptures = board.turn ? (wPawnsAble2CaptureWest(promoPawns, oppPieces)) : (bPawnsAble2CaptureWest(promoPawns, oppPieces));
+	uint64_t eastPromoCaptureTargets = board.turn ? (wPawnEastAttacks(eastPromoCaptures)) : (bPawnEastAttacks(eastPromoCaptures));
+	uint64_t westPromoCaptureTargets = board.turn ? (wPawnWestAttacks(westPromoCaptures)) : (bPawnWestAttacks(westPromoCaptures));
+	// East
+	while (eastPromoCaptureTargets != 0) {
+		int endSquare = bitScanForward(eastPromoCaptureTargets);
+		int fromSquare = endSquare + (board.turn ? -9 : 9);
+		addPromotion(fromSquare, endSquare, 0x4, moveList);
+
+		eastPromoCaptureTargets &= eastPromoCaptureTargets - 1;
+	}
+	// West
+	while (westPromoCaptureTargets != 0) {
+		int endSquare = bitScanForward(westPromoCaptureTargets);
+		int fromSquare = endSquare + (board.turn ? -7 : 7);
+		addPromotion(fromSquare, endSquare, 0x4, moveList);
+
+		westPromoCaptureTargets &= westPromoCaptureTargets - 1;
 	}
 }
 

@@ -1,4 +1,5 @@
 #include "board.hpp"
+
 #include <iostream> 
 #include <bitset>
 
@@ -98,4 +99,4 @@ void Board::parseFen(std::string fen) {
             rank++;
         }
     }
-}
+};

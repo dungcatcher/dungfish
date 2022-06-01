@@ -9,8 +9,11 @@ public:
     enum enumPiece {
         nWhite, nBlack, nPawn, nKnight, nBishop, nRook, nQueen, nKing
     };
+
+    Board(std::string fen); // Coonstructor
+
     // Getters
-    uint64_t getPieceSet(enumPiece pt) const;
+    uint64_t getPieceSet(enumPiece pt) const;   
     uint64_t getWhite()        const;
     uint64_t getBlack()        const;
     uint64_t getOccupied()     const; // All occupied squares
@@ -31,7 +34,6 @@ public:
     std::string prettyPrint();
 
     void parseFen(std::string fen);
-    Board(std::string fen);
 
     bool turn = 1; // 1 - white, 0 - black
 

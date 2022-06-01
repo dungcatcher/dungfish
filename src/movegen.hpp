@@ -27,7 +27,9 @@ inline std::string coordinateIndexTable[64] {
 
 std::string prettyPrintBitboard(uint64_t bb);
 
-void addMove(unsigned int start, unsigned int end, unsigned int flags, Move* moves);
+void addMove(unsigned int start, unsigned int end, unsigned int flags, Move* moveList);
+void addPromotion(unsigned int start, unsigned int end, unsigned int flags, Move* moveList);  // Flags for capturing
+inline unsigned int promotionPieces[4] = { 0x8, 0x9, 0xA, 0xB };
 
 uint64_t wSinglePushTargets(uint64_t wpawns, uint64_t empty);
 uint64_t wDblPushTargets(uint64_t wpawns, uint64_t empty);
@@ -44,8 +46,8 @@ uint64_t wPawnAnyAttacks(uint64_t wpawns);
 uint64_t bPawnEastAttacks(uint64_t bpawns);
 uint64_t bPawnWestAttacks(uint64_t bpawns);
 uint64_t bPawnAnyAttacks(uint64_t bpawns);
-uint64_t wPawnsAble2CaptureEast(uint64_t wpawns, uint64_t bpawns);
-uint64_t wPawnsAble2CaptureWest(uint64_t wpawns, uint64_t bpawns);
+uint64_t wPawnsAble2CaptureEast(uint64_t wpawns, uint64_t bpieces);
+uint64_t wPawnsAble2CaptureWest(uint64_t wpawns, uint64_t bpieces);
 uint64_t wPawnsAble2CaptureAny(uint64_t wpawns, uint64_t bpieces);
 uint64_t bPawnsAble2CaptureEast(uint64_t bpawns, uint64_t wpieces);
 uint64_t bPawnsAble2CaptureWest(uint64_t bpawns, uint64_t wpieces);
