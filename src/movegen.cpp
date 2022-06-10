@@ -355,3 +355,15 @@ void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
 	}
 
 }
+
+void generateLegalMoves(std::vector<Move> &moveList, const Board& board) {
+	generatePawnMoves(moveList, board);
+    generateKnightMoves(moveList, board);
+    generateBishopMoves(moveList, board);
+    generateRookMoves(moveList, board);
+    generateQueenMoves(moveList, board);
+
+	for (auto &move : moveList) {
+		
+	}
+}

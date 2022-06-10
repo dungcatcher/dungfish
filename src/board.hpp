@@ -2,6 +2,11 @@
 
 #include <cstdint>
 #include <string>
+#include "movegen.hpp"
+
+inline std::string pieceLetters[8] = { "w", "b", "p", "n", "b", "r", "q", "k" };
+
+class Move; // Forward declaration
 
 class Board {   
 public:
@@ -29,11 +34,20 @@ public:
     uint64_t getBlackQueens()  const;
     uint64_t getWhiteKings()   const;
     uint64_t getBlackKings()   const;
+
+    int getPieceAt(int square) const;
     
     std::string getPieceAtLocation(int x, int y);
     std::string prettyPrint();
+    std::string print();
 
-    void parseFen(std::string fen);
+    void parseFen(std::string fen);    
+
+    void makeMove(Move move);
+    void unmakeMove(Move move);
+
+    uint64_t getAttackMap(int colour) const;
+    uint64_t getAttacksToKing() const;
 
     bool turn = 1; // 1 - white, 0 - black
 
@@ -51,6 +65,4 @@ public:
     const uint64_t whiteCastlingQObstructions = 0x000000000000000E;
     const uint64_t blackCastlingKObstructions = 0x6000000000000000;
     const uint64_t blackCastlingQObstructions = 0x0E00000000000000;
-
-    std::string pieceLetters[8] = { "w", "b", "p", "n", "b", "r", "q", "k" };
 };

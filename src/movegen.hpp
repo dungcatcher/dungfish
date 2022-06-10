@@ -8,6 +8,7 @@
 #include "rays.hpp"
 #include "board.hpp"
 
+class Board;
 struct Move {
     unsigned int start; // Number from 0-63 (lerf)
     unsigned int end;
@@ -60,9 +61,13 @@ uint64_t generateBishopAttacks(uint64_t blockers, int square);
 uint64_t generateRookAttacks(uint64_t blockers, int square);
 uint64_t generateQueenAttacks(uint64_t blockers, int square);
 
+class Board;
 void generatePawnMoves(std::vector<Move>& moveList, const Board& board);
 void generateKnightMoves(std::vector<Move> &moveList, const Board& board);
 void generateBishopMoves(std::vector<Move> &moveList, const Board& board);
 void generateRookMoves(std::vector<Move> &moveList, const Board& board);
 void generateQueenMoves(std::vector<Move> &moveList, const Board& board);
 void generateKingMoves(std::vector<Move> &moveList, const Board& board);
+
+void moveIsLegal(Move move);
+void generateLegalMoves(std::vector<Move> &moveList, const Board& board);
