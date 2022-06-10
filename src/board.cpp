@@ -31,7 +31,7 @@ std::string Board::getPieceAtLocation(int x, int y) {
     uint64_t bitIndex = (uint64_t)1 << squareIndex;
     for (int i = 2; i < 8; i++) {
         if ((pieceBitboards[i] & bitIndex) != 0) {
-            std::string pieceLetter = pieceLetters[i];
+            std::string pieceLetter = PIECE_LETTERS[i];
             if ((pieceBitboards[nWhite] & bitIndex) != 0) // White is uppercase
                 for (auto & c: pieceLetter) c = toupper(c);
             return pieceLetter;
@@ -188,8 +188,15 @@ void Board::makeMove(Move move) {
 
     int turnBbIdx = turn ? 0 : 1;
     int oppTurnBbIdx = turn ? 1 : 0;
-    pieceBitboards[movePieceType] ^= fromToBb;
-    pieceBitboards[turnBbIdx] ^= fromToBb;
+
+    pieceBitboards[turnBbIdx] ^= fromToBb; // Update colour bitboard
+    if (move.flags & 0xf) { // Promotions
+        unsigned int promotionTypeIndex = (move.flags & 0x3) + 3; // Get promotion type and add 3 to correspond with piece bitboard index
+        pieceBitboards[movePieceType] ^= fromBb;
+        pieceBitboards[promotionTypeIndex] ^= endBb;
+    }
+    else
+        pieceBitboards[movePieceType] ^= fromToBb; // Move piece to location
 
     if (endPieceType != -1) { // Capture 
         pieceBitboards[endPieceType] ^= endBb;

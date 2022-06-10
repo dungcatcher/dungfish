@@ -9,7 +9,7 @@
 
 int main()
 {
-    std::string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+    std::string startFen = "rnbqkbnr/PPPPPPPP/8/8/8/8/PPPPPPPP/RNBQKBNR";
     Board board(startFen);
 
     initRays();

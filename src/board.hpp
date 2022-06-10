@@ -2,9 +2,10 @@
 
 #include <cstdint>
 #include <string>
+
 #include "movegen.hpp"
 
-inline std::string pieceLetters[8] = { "w", "b", "p", "n", "b", "r", "q", "k" };
+inline std::string PIECE_LETTERS[8] = { "w", "b", "p", "n", "b", "r", "q", "k" };
 
 class Move; // Forward declaration
 
