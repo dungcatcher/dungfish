@@ -128,7 +128,7 @@ void Board::parseFen(std::string fen) {
     }
 };
 
-uint64_t Board::getAttackMap(int colour) const {
+uint64_t Board::getAttackMap(bool colour) const {
     uint64_t pawns, knights, rooks, bishops, queens, kings, occupied;
     pawns   = colour ? getWhitePawns() : getBlackPawns();
     knights = colour ? getWhiteKnights() : getBlackKnights();
@@ -136,7 +136,6 @@ uint64_t Board::getAttackMap(int colour) const {
     bishops = colour ? getWhiteBishops() : getBlackBishops();
     queens = colour ? getWhiteQueens() : getBlackQueens();
     kings = colour ? getWhiteKings() : getBlackKings();
-    std::cout << "kings:\n" << prettyPrintBitboard(kings) << "\n";
     occupied = getOccupied();
 
     uint64_t pawnAttackMap = colour ? wPawnAnyAttacks(pawns) : bPawnAnyAttacks(pawns);
@@ -173,9 +172,9 @@ uint64_t Board::getAttackMap(int colour) const {
     return pawnAttackMap | knightAttackMap | bishopAttackMap | rookAttackMap | queenAttackMap | kingAttackMap;
 }
 
-uint64_t Board::getAttacksToKing() const {
-    uint64_t kingSquareBb = turn ? getWhiteKings() : getBlackKings();
-    return getAttackMap(!turn) & kingSquareBb;
+uint64_t Board::getAttacksToKing(bool colour) const {
+    uint64_t kingSquareBb = colour ? getWhiteKings() : getBlackKings();
+    return getAttackMap(!colour) & kingSquareBb;
 }
 
 void Board::makeMove(Move move) {
@@ -190,7 +189,7 @@ void Board::makeMove(Move move) {
     int oppTurnBbIdx = turn ? 1 : 0;
 
     pieceBitboards[turnBbIdx] ^= fromToBb; // Update colour bitboard
-    if (move.flags & 0xf) { // Promotions
+    if (move.flags & 0x8) { // Promotions
         unsigned int promotionTypeIndex = (move.flags & 0x3) + 3; // Get promotion type and add 3 to correspond with piece bitboard index
         pieceBitboards[movePieceType] ^= fromBb;
         pieceBitboards[promotionTypeIndex] ^= endBb;
@@ -202,4 +201,6 @@ void Board::makeMove(Move move) {
         pieceBitboards[endPieceType] ^= endBb;
         pieceBitboards[oppTurnBbIdx] ^= endBb;
     }
+
+    turn = !turn;
 }

@@ -69,5 +69,6 @@ void generateRookMoves(std::vector<Move> &moveList, const Board& board);
 void generateQueenMoves(std::vector<Move> &moveList, const Board& board);
 void generateKingMoves(std::vector<Move> &moveList, const Board& board);
 
-void moveIsLegal(Move move);
-void generateLegalMoves(std::vector<Move> &moveList, const Board& board);
+std::vector<Move> generateLegalMoves(std::vector<Move> &moveList, const Board& board);
+
+int perft(int depth, Board board);

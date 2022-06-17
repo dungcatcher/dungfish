@@ -47,8 +47,8 @@ public:
     void makeMove(Move move);
     void unmakeMove(Move move);
 
-    uint64_t getAttackMap(int colour) const;
-    uint64_t getAttacksToKing() const;
+    uint64_t getAttackMap(bool colour) const;
+    uint64_t getAttacksToKing(bool colour) const;
 
     bool turn = 1; // 1 - white, 0 - black
 

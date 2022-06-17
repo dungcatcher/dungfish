@@ -356,14 +356,40 @@ void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
 
 }
 
-void generateLegalMoves(std::vector<Move> &moveList, const Board& board) {
+std::vector<Move> generateLegalMoves(std::vector<Move> &moveList, const Board& board) {
 	generatePawnMoves(moveList, board);
     generateKnightMoves(moveList, board);
     generateBishopMoves(moveList, board);
     generateRookMoves(moveList, board);
     generateQueenMoves(moveList, board);
+	
+	std::vector<Move> newMoveList;
 
 	for (auto &move : moveList) {
-		
+		Board tempBoard = board;
+		tempBoard.makeMove(move);
+		if (tempBoard.getAttacksToKing(!tempBoard.turn) == 0) {
+			newMoveList.push_back(move);
+		}
 	}
+
+	return newMoveList;
+}
+
+int perft(int depth, Board board) {
+	std::vector<Move> moveList;
+	std::vector<Move> legalMoveList = generateLegalMoves(moveList, board);
+	
+	int nodes = 0;
+	if (depth == 0) {
+		return 1;
+	}
+
+	for (auto &move : legalMoveList) {
+		Board newBoard = board;
+		newBoard.makeMove(move);
+		nodes += perft(depth - 1, newBoard);
+	}
+
+	return nodes;
 }

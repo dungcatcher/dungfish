@@ -9,7 +9,7 @@
 
 int main()
 {
-    std::string startFen = "rnbqkbnr/PPPPPPPP/8/8/8/8/PPPPPPPP/RNBQKBNR";
+    std::string startFen = "rnbqkbnr/pppppppp/8/8/rrrrrrrr/8/8/RNBQKBNR";
     Board board(startFen);
 
     initRays();
@@ -18,12 +18,14 @@ int main()
     std::vector<Move> moveList;
     moveList.reserve(256);
 
-    generateLegalMoves(moveList, board);
-    for (auto &move : moveList) {
+    std::vector<Move> legalMoveList = generateLegalMoves(moveList, board);
+    for (auto &move : legalMoveList) {
         Board newBoard = board;
         newBoard.makeMove(move);
         std::cout << newBoard.print() << "\n";
     }
+
+    std::cout << perft(4, board);
 
     return 0;
 }
