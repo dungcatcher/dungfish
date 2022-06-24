@@ -62,7 +62,7 @@ uint64_t generateRookAttacks(uint64_t blockers, int square);
 uint64_t generateQueenAttacks(uint64_t blockers, int square);
 
 class Board;
-void generatePawnMoves(std::vector<Move>& moveList, const Board& board);
+void generatePawnMoves(std::vector<Move> &moveList, const Board& board);
 void generateKnightMoves(std::vector<Move> &moveList, const Board& board);
 void generateBishopMoves(std::vector<Move> &moveList, const Board& board);
 void generateRookMoves(std::vector<Move> &moveList, const Board& board);

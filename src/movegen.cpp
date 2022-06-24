@@ -250,7 +250,7 @@ uint64_t generateRookAttacks(uint64_t blockers, int square) {
 
 	attacks |= getPositiveRayAttacks(blockers, square, NORTH);
 	attacks |= getPositiveRayAttacks(blockers, square, EAST);
-	attacks |= getPositiveRayAttacks(blockers, square, WEST);
+	attacks |= getNegativeRayAttacks(blockers, square, WEST);
 	attacks |= getNegativeRayAttacks(blockers, square, SOUTH);
 
 	return attacks;
@@ -297,6 +297,7 @@ void generateRookMoves(std::vector<Move> &moveList, const Board& board) {
 	while (rooks) {
 		int fromSquare = bitScanForward(rooks);
 		uint64_t rookAttacks = generateRookAttacks(blockers, fromSquare);
+
 		while (rookAttacks) {
 			int endSquare = bitScanForward(rookAttacks);
 			uint64_t endSquareBits = (uint64_t)0x1 << endSquare;
@@ -314,8 +315,28 @@ void generateRookMoves(std::vector<Move> &moveList, const Board& board) {
 }
 
 void generateQueenMoves(std::vector<Move> &moveList, const Board& board) {
-	generateBishopMoves(moveList, board);
-	generateRookMoves(moveList, board);
+	uint64_t queens = board.turn ? board.getWhiteQueens() : board.getBlackQueens();
+	uint64_t teamPieces = board.turn ? board.getWhite() : board.getBlack();
+	uint64_t enemyPieces = board.turn ? board.getBlack() : board.getWhite();
+	uint64_t blockers = teamPieces | enemyPieces;
+
+	while (queens) {
+		int fromSquare = bitScanForward(queens);
+		uint64_t queenAttacks = generateRookAttacks(blockers, fromSquare) | generateBishopAttacks(blockers, fromSquare);
+		while (queenAttacks) {
+			int endSquare = bitScanForward(queenAttacks);
+			uint64_t endSquareBits = (uint64_t)0x1 << endSquare;
+			// Check if attacks are on pieces or empty squares
+			if (blockers & endSquareBits) {
+				if (enemyPieces & endSquareBits)
+					addMove(fromSquare, endSquare, 0x4, moveList);
+			}
+			else
+				addMove(fromSquare, endSquare, 0x0, moveList);
+			queenAttacks &= queenAttacks - 1;
+		}
+		queens &= queens - 1;
+	}
 }
 
 void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
@@ -337,22 +358,22 @@ void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
 		king &= king - 1;
 	}
 	// Castling
-	if (board.turn) {
-		if (board.whiteCastleK)
-			if (board.whiteCastlingKObstructions & empty) // Castling squares are empty and rook is there
-				addMove(kingPosition, board.whiteCastlingKSquare, 0x2, moveList);
-		if (board.whiteCastleQ)
-			if (board.whiteCastlingQObstructions & empty)
-				addMove(kingPosition, board.whiteCastlingQSquare, 0x2, moveList);
-	}
-	else {
-		if (board.blackCastleK)
-			if (board.blackCastlingKObstructions & empty)
-				addMove(kingPosition, board.blackCastlingKSquare, 0x2, moveList);
-		if (board.blackCastleQ)
-			if (board.blackCastlingQObstructions & empty)
-				addMove(kingPosition, board.blackCastlingQSquare, 0x2, moveList);
-	}
+	// if (board.turn) {
+	// 	if (board.whiteCastleK)
+	// 		if (board.whiteCastlingKObstructions & empty) // Castling squares are empty and rook is there
+	// 			addMove(kingPosition, board.whiteCastlingKSquare, 0x2, moveList);
+	// 	if (board.whiteCastleQ)
+	// 		if (board.whiteCastlingQObstructions & empty)
+	// 			addMove(kingPosition, board.whiteCastlingQSquare, 0x2, moveList);
+	// }
+	// else {
+	// 	if (board.blackCastleK)
+	// 		if (board.blackCastlingKObstructions & empty)
+	// 			addMove(kingPosition, board.blackCastlingKSquare, 0x2, moveList);
+	// 	if (board.blackCastleQ)
+	// 		if (board.blackCastlingQObstructions & empty)
+	// 			addMove(kingPosition, board.blackCastlingQSquare, 0x2, moveList);
+	// }
 
 }
 
@@ -362,6 +383,7 @@ std::vector<Move> generateLegalMoves(std::vector<Move> &moveList, const Board& b
     generateBishopMoves(moveList, board);
     generateRookMoves(moveList, board);
     generateQueenMoves(moveList, board);
+	generateKingMoves(moveList, board);
 	
 	std::vector<Move> newMoveList;
 
@@ -384,8 +406,9 @@ int perft(int depth, Board board) {
 	if (depth == 0) {
 		return 1;
 	}
-
+	
 	for (auto &move : legalMoveList) {
+		int moveNodes = 0;
 		Board newBoard = board;
 		newBoard.makeMove(move);
 		nodes += perft(depth - 1, newBoard);

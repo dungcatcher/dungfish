@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <chrono>
 
 #include "board.hpp"
 #include "movegen.hpp"
@@ -9,23 +10,28 @@
 
 int main()
 {
-    std::string startFen = "rnbqkbnr/pppppppp/8/8/rrrrrrrr/8/8/RNBQKBNR";
+    std::string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
     Board board(startFen);
 
     initRays();
     initTables();
 
     std::vector<Move> moveList;
-    moveList.reserve(256);
-
-    std::vector<Move> legalMoveList = generateLegalMoves(moveList, board);
-    for (auto &move : legalMoveList) {
+    moveList = generateLegalMoves(moveList, board);
+    for (auto &move : moveList) {
         Board newBoard = board;
         newBoard.makeMove(move);
-        std::cout << newBoard.print() << "\n";
+        std::cout << coordinateIndexTable[move.start] << coordinateIndexTable[move.end] << ": " << perft(4, newBoard) << "\n";
     }
 
-    std::cout << perft(4, board);
+    auto start = std::chrono::steady_clock::now();
+    int perftNum = perft(5, board);
+    std::cout << perftNum << "\n";
+    auto end = std::chrono::steady_clock::now();
+
+    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    double nps = (double)perftNum / ((double)elapsedTime / 1000.0);
+    std::cout << "Nodes per second: " << nps << "\n";
 
     return 0;
 }
