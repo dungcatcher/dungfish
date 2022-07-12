@@ -146,7 +146,7 @@ void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
 	// East
 	while (captureTargetsEast != 0) {
 		int endSquare = bitScanForward(captureTargetsEast);
-		int fromSquare = endSquare + (board.turn ? -9 : 9);
+		int fromSquare = endSquare + (board.turn ? -9 : 7);
 		addMove(fromSquare, endSquare, 0x4, moveList);
 
 		captureTargetsEast &= captureTargetsEast - 1;
@@ -154,7 +154,7 @@ void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
 	// West
 	while (captureTargetsWest != 0) {
 		int endSquare = bitScanForward(captureTargetsWest);
-		int fromSquare = endSquare + (board.turn ? -7 : 7);
+		int fromSquare = endSquare + (board.turn ? -7 : 9);
 		addMove(fromSquare, endSquare, 0x4, moveList);
 
 		captureTargetsWest &= captureTargetsWest - 1;
