@@ -66,4 +66,6 @@ public:
     const uint64_t whiteCastlingQObstructions = 0x000000000000000E;
     const uint64_t blackCastlingKObstructions = 0x6000000000000000;
     const uint64_t blackCastlingQObstructions = 0x0E00000000000000;
+
+    int enpassantSquare = -1; // Square that can be taken enpassant
 };

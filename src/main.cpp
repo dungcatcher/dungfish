@@ -10,9 +10,9 @@
 
 int main()
 {
-    std::string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+    std::string startFen = "r1bqkbnr/pppppppp/8/8/1n6/P7/2PPPPPP/RNBQKBNR";
     Board board(startFen);
-    board.turn = 0;
+    board.turn = 1;
 
     initRays();
     initTables();
@@ -22,11 +22,11 @@ int main()
     for (auto &move : moveList) {
         Board newBoard = board;
         newBoard.makeMove(move);
-        std::cout << coordinateIndexTable[move.start] << coordinateIndexTable[move.end] << ": " << perft(3, newBoard) << "\n";
+        std::cout << coordinateIndexTable[move.start] << coordinateIndexTable[move.end] << ": " << perft(0, newBoard) << "\n";
     }
     
     auto start = std::chrono::steady_clock::now();
-    int perftNum = perft(4, board);
+    int perftNum = perft(1, board);
     std::cout << perftNum << "\n";
     auto end = std::chrono::steady_clock::now();
 

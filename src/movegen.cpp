@@ -138,7 +138,10 @@ void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
 		dblPushTargets &= dblPushTargets - 1;
 	}
 
-	// Captures
+	if (board.enpassantSquare != -1)
+		oppPieces |= ((uint64_t)0x1 << board.enpassantSquare); // Add enpassant square as a "piece"
+
+	// Captures + Enpassant
 	uint64_t capturePawnsEast = board.turn ? (wPawnsAble2CaptureEast(pawns, oppPieces)) : (bPawnsAble2CaptureEast(pawns, oppPieces));
 	uint64_t capturePawnsWest = board.turn ? (wPawnsAble2CaptureWest(pawns, oppPieces)) : (bPawnsAble2CaptureWest(pawns, oppPieces));
 	uint64_t captureTargetsEast = board.turn ? (wPawnEastAttacks(capturePawnsEast)) : (bPawnEastAttacks(capturePawnsEast));
@@ -147,7 +150,10 @@ void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
 	while (captureTargetsEast != 0) {
 		int endSquare = bitScanForward(captureTargetsEast);
 		int fromSquare = endSquare + (board.turn ? -9 : 7);
-		addMove(fromSquare, endSquare, 0x4, moveList);
+		if (endSquare != board.enpassantSquare)
+			addMove(fromSquare, endSquare, 0x4, moveList);
+		else
+			addMove(fromSquare, endSquare, 0x5, moveList); // En passant
 
 		captureTargetsEast &= captureTargetsEast - 1;
 	}
@@ -155,7 +161,10 @@ void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
 	while (captureTargetsWest != 0) {
 		int endSquare = bitScanForward(captureTargetsWest);
 		int fromSquare = endSquare + (board.turn ? -7 : 9);
-		addMove(fromSquare, endSquare, 0x4, moveList);
+		if (endSquare != board.enpassantSquare)
+			addMove(fromSquare, endSquare, 0x4, moveList);
+		else
+			addMove(fromSquare, endSquare, 0x5, moveList);
 
 		captureTargetsWest &= captureTargetsWest - 1;
 	}

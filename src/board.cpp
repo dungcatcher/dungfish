@@ -185,8 +185,8 @@ void Board::makeMove(Move move) {
     int movePieceType = getPieceAt(move.start);
     int endPieceType = getPieceAt(move.end);
 
-    int turnBbIdx = turn ? 0 : 1;
-    int oppTurnBbIdx = turn ? 1 : 0;
+    int turnBbIdx = turn ? nWhite : nBlack;
+    int oppTurnBbIdx = turn ? nBlack : nWhite;
 
     pieceBitboards[turnBbIdx] ^= fromToBb; // Update colour bitboard
     if (move.flags & 0x8) { // Promotions
@@ -196,11 +196,21 @@ void Board::makeMove(Move move) {
     }
     else
         pieceBitboards[movePieceType] ^= fromToBb; // Move piece to location
-
-    if (endPieceType != -1) { // Capture 
+    
+    if (move.flags == 0x5) { // En passant
+        uint64_t epCapturePieceBb = (uint64_t)0x1 << (enpassantSquare + (turn ? -8 : 8));
+        pieceBitboards[nPawn] ^= epCapturePieceBb; // Remove enpassant piece
+    }
+    else if (move.flags & 0x4) { // Capture 
         pieceBitboards[endPieceType] ^= endBb;
         pieceBitboards[oppTurnBbIdx] ^= endBb;
     }
+    
+
+    if (move.flags == 0x1) // Double push
+        enpassantSquare = move.end + (turn ? -8 : 8);
+    else
+        enpassantSquare = -1;
 
     turn = !turn;
 }
