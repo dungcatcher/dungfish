@@ -214,7 +214,11 @@ void generateKnightMoves(std::vector<Move> &moveList, const Board& board) {
 		pseudoKnightAttacks &= ~teamPieces;
 		while (pseudoKnightAttacks != 0) {
 			int endSquare = bitScanForward(pseudoKnightAttacks);
-			addMove(fromSquare, endSquare, 0x0, moveList);
+			uint64_t endSquareBit = (uint64_t)0x1 << endSquare;
+			if (endSquareBit & board.getOccupied())
+				addMove(fromSquare, endSquare, 0x4, moveList);
+			else
+				addMove(fromSquare, endSquare, 0x0, moveList);
 			pseudoKnightAttacks &= pseudoKnightAttacks - 1;
 		}
 		knights &= knights - 1;
