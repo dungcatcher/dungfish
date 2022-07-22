@@ -358,6 +358,8 @@ void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
 	uint64_t rooks = board.turn ? board.getWhiteRooks() : board.getBlackRooks();
 	uint64_t teamPieces = board.turn ? board.getWhite() : board.getBlack();
 	uint64_t empty = ~board.getOccupied();
+	uint64_t occupied = board.getOccupied();
+	uint64_t opponentAttackMap = board.getAttackMap(!board.turn);
 
 	while (king != 0) {
 		int fromSquare = kingPosition;
@@ -371,22 +373,26 @@ void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
 		king &= king - 1;
 	}
 	// Castling
-	// if (board.turn) {
-	// 	if (board.whiteCastleK)
-	// 		if (board.whiteCastlingKObstructions & empty) // Castling squares are empty and rook is there
-	// 			addMove(kingPosition, board.whiteCastlingKSquare, 0x2, moveList);
-	// 	if (board.whiteCastleQ)
-	// 		if (board.whiteCastlingQObstructions & empty)
-	// 			addMove(kingPosition, board.whiteCastlingQSquare, 0x2, moveList);
-	// }
-	// else {
-	// 	if (board.blackCastleK)
-	// 		if (board.blackCastlingKObstructions & empty)
-	// 			addMove(kingPosition, board.blackCastlingKSquare, 0x2, moveList);
-	// 	if (board.blackCastleQ)
-	// 		if (board.blackCastlingQObstructions & empty)
-	// 			addMove(kingPosition, board.blackCastlingQSquare, 0x2, moveList);
-	// }
+	if (board.turn) {
+		if (board.whiteCastleK)
+			if (!(board.whiteCastlingKObstructions & occupied)) // Castling squares are empty and rook is there
+				if (!((king | board.whiteCastlingKObstructions) & opponentAttackMap)) // Will not be in check
+					addMove(kingPosition, board.whiteCastlingKSquare, 0x2, moveList);
+		if (board.whiteCastleQ)
+			if (!(board.whiteCastlingQObstructions & occupied))
+				if (!((king | board.whiteCastlingQObstructions) & opponentAttackMap))
+					addMove(kingPosition, board.whiteCastlingQSquare, 0x2, moveList);
+	}
+	else {
+		if (board.blackCastleK)
+			if (!board.blackCastlingKObstructions & occupied)
+				if (!((king | board.blackCastlingKObstructions) & opponentAttackMap))
+					addMove(kingPosition, board.blackCastlingKSquare, 0x2, moveList);
+		if (board.blackCastleQ)
+			if (!(board.blackCastlingQObstructions & occupied))
+				if (!((king | board.blackCastlingQObstructions) & opponentAttackMap))
+					addMove(kingPosition, board.blackCastlingQSquare, 0x2, moveList);
+	}
 
 }
 
