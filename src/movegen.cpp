@@ -381,17 +381,17 @@ void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
 		if (board.whiteCastleQ)
 			if (!(board.whiteCastlingQObstructions & occupied))
 				if (!((king | board.whiteCastlingQObstructions) & opponentAttackMap))
-					addMove(kingPosition, board.whiteCastlingQSquare, 0x2, moveList);
+					addMove(kingPosition, board.whiteCastlingQSquare, 0x3, moveList);
 	}
 	else {
 		if (board.blackCastleK)
-			if (!board.blackCastlingKObstructions & occupied)
+			if (!(board.blackCastlingKObstructions & occupied))
 				if (!((king | board.blackCastlingKObstructions) & opponentAttackMap))
 					addMove(kingPosition, board.blackCastlingKSquare, 0x2, moveList);
 		if (board.blackCastleQ)
 			if (!(board.blackCastlingQObstructions & occupied))
 				if (!((king | board.blackCastlingQObstructions) & opponentAttackMap))
-					addMove(kingPosition, board.blackCastlingQSquare, 0x2, moveList);
+					addMove(kingPosition, board.blackCastlingQSquare, 0x3, moveList);
 	}
 
 }

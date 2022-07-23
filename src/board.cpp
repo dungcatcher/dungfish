@@ -206,11 +206,19 @@ void Board::makeMove(Move move) {
         pieceBitboards[oppTurnBbIdx] ^= endBb;
     }
     
-
     if (move.flags == 0x1) // Double push
         enpassantSquare = move.end + (turn ? -8 : 8);
     else
         enpassantSquare = -1;
+
+    if (move.flags == 0x2) {
+        uint64_t rookMove = eastOne(endBb) | westOne(endBb);
+        pieceBitboards[nRook] ^= rookMove;
+    }
+    else if (move.flags == 0x3) {
+        uint64_t rookMove = eastOne(endBb) | westOne(westOne(endBb));
+        pieceBitboards[nRook] ^= rookMove;
+    }
 
     turn = !turn;
 }
