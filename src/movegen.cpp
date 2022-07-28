@@ -361,6 +361,19 @@ void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
 	uint64_t occupied = board.getOccupied();
 	uint64_t opponentAttackMap = board.getAttackMap(!board.turn);
 
+	const int WHITE_CASTLING_KSQUARE = 6;
+    const int WHITE_CASTLING_QSQUARE = 2;
+    const int BLACK_CASTLING_KSQUARE = 62;
+    const int BLACK_CASLTING_QSQUARE = 58;
+    const uint64_t WHITE_CASTLING_K_OBSTRUCTIONS = 0x0000000000000060;
+    const uint64_t WHITE_CASTLING_Q_OBSTRUCTIONS = 0x000000000000000E;
+    const uint64_t BLACK_CASTLING_K_OBSTRUCTIONS = 0x6000000000000000;
+    const uint64_t BLACK_CASTLING_Q_OBSTRUCTIONS = 0x0E00000000000000;
+
+	const uint64_t WHITE_CASTLING_Q_ATTACK_REMOVER = (uint64_t)0x1 << 1;  // Don't check this square for attacks, only for blockades
+	const uint64_t BLACK_CASTLING_Q_ATTACK_REMOVER = (uint64_t)0x1 << 57;
+
+
 	while (king != 0) {
 		int fromSquare = kingPosition;
 		uint64_t pseudoKingAttacks = kingAttacks[fromSquare];
@@ -375,23 +388,23 @@ void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
 	// Castling
 	if (board.turn) {
 		if (board.whiteCastleK)
-			if (!(board.whiteCastlingKObstructions & occupied)) // Castling squares are empty and rook is there
-				if (!((king | board.whiteCastlingKObstructions) & opponentAttackMap)) // Will not be in check
-					addMove(kingPosition, board.whiteCastlingKSquare, 0x2, moveList);
+			if (!(WHITE_CASTLING_K_OBSTRUCTIONS & occupied)) // Castling squares are empty and rook is there
+				if (!((king | WHITE_CASTLING_K_OBSTRUCTIONS) & opponentAttackMap)) // Will not be in check
+					addMove(kingPosition, WHITE_CASTLING_KSQUARE, 0x2, moveList);
 		if (board.whiteCastleQ)
-			if (!(board.whiteCastlingQObstructions & occupied))
-				if (!((king | board.whiteCastlingQObstructions) & opponentAttackMap))
-					addMove(kingPosition, board.whiteCastlingQSquare, 0x3, moveList);
+			if (!(WHITE_CASTLING_Q_OBSTRUCTIONS & occupied))
+				if (!((king | WHITE_CASTLING_Q_OBSTRUCTIONS ^ WHITE_CASTLING_Q_ATTACK_REMOVER) & opponentAttackMap))
+					addMove(kingPosition, WHITE_CASTLING_QSQUARE, 0x3, moveList);
 	}
 	else {
 		if (board.blackCastleK)
-			if (!(board.blackCastlingKObstructions & occupied))
-				if (!((king | board.blackCastlingKObstructions) & opponentAttackMap))
-					addMove(kingPosition, board.blackCastlingKSquare, 0x2, moveList);
+			if (!(BLACK_CASTLING_K_OBSTRUCTIONS & occupied))
+				if (!((king | BLACK_CASTLING_K_OBSTRUCTIONS) & opponentAttackMap))
+					addMove(kingPosition, BLACK_CASTLING_KSQUARE, 0x2, moveList);
 		if (board.blackCastleQ)
-			if (!(board.blackCastlingQObstructions & occupied))
-				if (!((king | board.blackCastlingQObstructions) & opponentAttackMap))
-					addMove(kingPosition, board.blackCastlingQSquare, 0x3, moveList);
+			if (!(BLACK_CASTLING_Q_OBSTRUCTIONS & occupied))
+				if (!((king | BLACK_CASTLING_Q_OBSTRUCTIONS ^ BLACK_CASTLING_Q_ATTACK_REMOVER) & opponentAttackMap))
+					addMove(kingPosition, BLACK_CASLTING_QSQUARE, 0x3, moveList);
 	}
 
 }

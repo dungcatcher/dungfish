@@ -15,6 +15,18 @@ int main()
 
     board.turn = 1;
 
+    Move move;
+    move.start = 4;
+    move.end = 2;
+    move.flags = 0x3;
+    board.makeMove(move);
+
+    Move move2;
+    move.start = 60;
+    move.end = 58;
+    move.flags = 0x3;
+    board.makeMove(move2);
+
     initRays();
     initTables();
 
@@ -23,11 +35,11 @@ int main()
     for (auto &move : moveList) {
         Board newBoard = board;
         newBoard.makeMove(move);
-        std::cout << coordinateIndexTable[move.start] << coordinateIndexTable[move.end] << ": " << perft(1, newBoard) << "\n";
+        std::cout << coordinateIndexTable[move.start] << coordinateIndexTable[move.end] << ": " << perft(0, newBoard) << "\n";
     }
     
     auto start = std::chrono::steady_clock::now();
-    int perftNum = perft(2, board);
+    int perftNum = perft(1, board);
     std::cout << perftNum << "\n";
     auto end = std::chrono::steady_clock::now();
 

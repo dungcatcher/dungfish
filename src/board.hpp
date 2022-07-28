@@ -58,14 +58,5 @@ public:
     bool blackCastleK = true;
     bool blackCastleQ = true;
 
-    const int whiteCastlingKSquare = 6;
-    const int whiteCastlingQSquare = 2;
-    const int blackCastlingKSquare = 62;
-    const int blackCastlingQSquare = 58;
-    const uint64_t whiteCastlingKObstructions = 0x0000000000000060;
-    const uint64_t whiteCastlingQObstructions = 0x000000000000000E;
-    const uint64_t blackCastlingKObstructions = 0x6000000000000000;
-    const uint64_t blackCastlingQObstructions = 0x0E00000000000000;
-
     int enpassantSquare = -1; // Square that can be taken enpassant
 };

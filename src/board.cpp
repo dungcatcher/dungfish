@@ -220,5 +220,30 @@ void Board::makeMove(Move move) {
         pieceBitboards[nRook] ^= rookMove;
     }
 
+    // Update castling rights
+    if (movePieceType == nKing)
+        if (turn) {
+            whiteCastleK = false;
+            whiteCastleQ = false;
+        }
+        else {
+            blackCastleK = false;
+            blackCastleQ = false;
+        }
+    else if (movePieceType == nRook) {
+        if (turn) {
+            if (move.start == 0)
+                whiteCastleQ = false;
+            else if (move.start == 7)
+                whiteCastleK = false;
+        }
+        else {
+            if (move.start == 56)
+                blackCastleQ = false;
+            else if (move.start == 63)
+                blackCastleK = false;
+        }
+    }
+
     turn = !turn;
 }
