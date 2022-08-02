@@ -3,6 +3,7 @@
 
 #include <iostream> 
 #include <bitset>
+#include <sstream>
 
 Board::Board(std::string fen) {
     parseFen(fen);
@@ -85,10 +86,18 @@ std::string Board::print() {
 };
 
 void Board::parseFen(std::string fen) {
+    std::string buffer;
+    std::stringstream ss(fen);
+    std::vector<std::string> fields;
+
+    while (ss >> buffer) 
+        fields.push_back(buffer);
+    
+    // 1. Position data
     int rank = 0;
     int file = 0;
 
-    for (auto &ch : fen) {
+    for (auto &ch : fields[FEN_POSITION]) {
         int lerfIdx = (8 * (7 - rank)) + (file);
         uint64_t bitboardIdx = (uint64_t)0x1 << lerfIdx;
 
@@ -126,6 +135,31 @@ void Board::parseFen(std::string fen) {
             rank++;
         }
     }
+
+    // 2. Active colour
+    turn = fields[FEN_TURN] == "w" ? 1 : 0;
+
+    // 3. Castling availability
+    if (!(fields[FEN_CASTLING].find("k") != std::string::npos))
+        blackCastleK = false;
+    if (!(fields[FEN_CASTLING].find("q") != std::string::npos))
+        blackCastleQ = false;
+    if (!(fields[FEN_CASTLING].find("K") != std::string::npos))
+        whiteCastleK = false;
+    if (!(fields[FEN_CASTLING].find("Q") != std::string::npos))
+        whiteCastleQ = false;
+
+    // 4. En passant target square
+    if (fields[FEN_ENPASSANT] != "-")
+        enpassantSquare = coordinateIndexMap[fields[FEN_ENPASSANT]];
+
+    // 5. 50-move Halfmove clock
+    if (fields.size() - 1 >= FEN_HALFMOVE && fields[FEN_HALFMOVE] != "-")
+        fiftyMoveHalfmoves = (unsigned int)std::stoi(fields[FEN_HALFMOVE]);
+    
+    // 6. Full moves
+    if (fields.size() - 1 >= FEN_FULLMOVE && fields[FEN_FULLMOVE] != "-")
+        fiftyMoveHalfmoves = (unsigned int)std::stoi(fields[FEN_FULLMOVE]);
 };
 
 uint64_t Board::getAttackMap(bool colour) const {
@@ -200,6 +234,7 @@ void Board::makeMove(Move move) {
     if (move.flags == 0x5) { // En passant
         uint64_t epCapturePieceBb = (uint64_t)0x1 << (enpassantSquare + (turn ? -8 : 8));
         pieceBitboards[nPawn] ^= epCapturePieceBb; // Remove enpassant piece
+        pieceBitboards[oppTurnBbIdx] ^= epCapturePieceBb;
     }
     else if (move.flags & 0x4) { // Capture 
         pieceBitboards[endPieceType] ^= endBb;
@@ -214,10 +249,12 @@ void Board::makeMove(Move move) {
     if (move.flags == 0x2) {
         uint64_t rookMove = eastOne(endBb) | westOne(endBb);
         pieceBitboards[nRook] ^= rookMove;
+        pieceBitboards[turnBbIdx] ^= rookMove;
     }
     else if (move.flags == 0x3) {
         uint64_t rookMove = eastOne(endBb) | westOne(westOne(endBb));
         pieceBitboards[nRook] ^= rookMove;
+        pieceBitboards[turnBbIdx] ^= rookMove;
     }
 
     // Update castling rights

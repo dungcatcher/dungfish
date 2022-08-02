@@ -42,7 +42,10 @@ public:
     std::string prettyPrint();
     std::string print();
 
-    void parseFen(std::string fen);    
+    void parseFen(std::string fen);
+    enum fenFields {
+        FEN_POSITION, FEN_TURN, FEN_CASTLING, FEN_ENPASSANT, FEN_HALFMOVE, FEN_FULLMOVE
+    };  
 
     void makeMove(Move move);
     void unmakeMove(Move move);
@@ -57,6 +60,9 @@ public:
     bool whiteCastleQ = true;
     bool blackCastleK = true;
     bool blackCastleQ = true;
+
+    unsigned int fiftyMoveHalfmoves = 0;
+    unsigned int fullmoves = 1;
 
     int enpassantSquare = -1; // Square that can be taken enpassant
 };

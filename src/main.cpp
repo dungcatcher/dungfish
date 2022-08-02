@@ -17,7 +17,7 @@ int main()
     initTables();
     
     auto start = std::chrono::steady_clock::now();
-    int perftNum = perft(6, board, true);
+    int perftNum = perft(5, board, true);
     std::cout << perftNum << "\n";
     auto end = std::chrono::steady_clock::now();
 

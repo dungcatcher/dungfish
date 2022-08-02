@@ -176,7 +176,7 @@ void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
 	while (singlePushPromoTargets != 0) { // Loop through 1 bits of target squares
 		int endSquare = bitScanForward(singlePushPromoTargets); 
 		int fromSquare = endSquare + (board.turn ? -8 : 8); // Trace back to origin square
-		addPromotion(fromSquare, endSquare, 0x0, moveList);
+		addPromotion(fromSquare, endSquare, 0x8, moveList);
 
 		singlePushPromoTargets &= singlePushPromoTargets - 1; // Set ls1b to 0
 	}
@@ -189,16 +189,16 @@ void generatePawnMoves(std::vector<Move> &moveList, const Board& board) {
 	// East
 	while (eastPromoCaptureTargets != 0) {
 		int endSquare = bitScanForward(eastPromoCaptureTargets);
-		int fromSquare = endSquare + (board.turn ? -9 : 9);
-		addPromotion(fromSquare, endSquare, 0x4, moveList);
+		int fromSquare = endSquare + (board.turn ? -9 : 7);
+		addPromotion(fromSquare, endSquare, 0x8 | 0x4, moveList);
 
 		eastPromoCaptureTargets &= eastPromoCaptureTargets - 1;
 	}
 	// West
 	while (westPromoCaptureTargets != 0) {
 		int endSquare = bitScanForward(westPromoCaptureTargets);
-		int fromSquare = endSquare + (board.turn ? -7 : 7);
-		addPromotion(fromSquare, endSquare, 0x4, moveList);
+		int fromSquare = endSquare + (board.turn ? -7 : 9);
+		addPromotion(fromSquare, endSquare, 0x8 | 0x4, moveList);
 
 		westPromoCaptureTargets &= westPromoCaptureTargets - 1;
 	}
@@ -380,7 +380,11 @@ void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
 		pseudoKingAttacks &= ~teamPieces;
 		while (pseudoKingAttacks != 0) {
 			int endSquare = bitScanForward(pseudoKingAttacks);
-			addMove(fromSquare, endSquare, 0x0, moveList);
+			uint64_t endSquareBits = (uint64_t)0x1 << endSquare;
+			if (endSquareBits & occupied)
+				addMove(fromSquare, endSquare, 0x4, moveList);
+			else
+				addMove(fromSquare, endSquare, 0x0, moveList);
 			pseudoKingAttacks &= pseudoKingAttacks - 1;
 		}
 		king &= king - 1;
@@ -388,23 +392,27 @@ void generateKingMoves(std::vector<Move> &moveList, const Board& board) {
 	// Castling
 	if (board.turn) {
 		if (board.whiteCastleK)
-			if (!(WHITE_CASTLING_K_OBSTRUCTIONS & occupied)) // Castling squares are empty and rook is there
-				if (!((king | WHITE_CASTLING_K_OBSTRUCTIONS) & opponentAttackMap)) // Will not be in check
-					addMove(kingPosition, WHITE_CASTLING_KSQUARE, 0x2, moveList);
+			if (!(board.getAttacksToKing(board.turn))) // Not in check
+				if (!(WHITE_CASTLING_K_OBSTRUCTIONS & occupied)) // Castling squares are empty and rook is there
+					if (!((king | WHITE_CASTLING_K_OBSTRUCTIONS) & opponentAttackMap)) // Will not be in check
+						addMove(kingPosition, WHITE_CASTLING_KSQUARE, 0x2, moveList);
 		if (board.whiteCastleQ)
-			if (!(WHITE_CASTLING_Q_OBSTRUCTIONS & occupied))
-				if (!((king | WHITE_CASTLING_Q_OBSTRUCTIONS ^ WHITE_CASTLING_Q_ATTACK_REMOVER) & opponentAttackMap))
-					addMove(kingPosition, WHITE_CASTLING_QSQUARE, 0x3, moveList);
+			if (!(board.getAttacksToKing(board.turn)))
+				if (!(WHITE_CASTLING_Q_OBSTRUCTIONS & occupied))
+					if (!((king | WHITE_CASTLING_Q_OBSTRUCTIONS ^ WHITE_CASTLING_Q_ATTACK_REMOVER) & opponentAttackMap))
+						addMove(kingPosition, WHITE_CASTLING_QSQUARE, 0x3, moveList);
 	}
 	else {
 		if (board.blackCastleK)
-			if (!(BLACK_CASTLING_K_OBSTRUCTIONS & occupied))
-				if (!((king | BLACK_CASTLING_K_OBSTRUCTIONS) & opponentAttackMap))
-					addMove(kingPosition, BLACK_CASTLING_KSQUARE, 0x2, moveList);
+			if (!(board.getAttacksToKing(board.turn)))
+				if (!(BLACK_CASTLING_K_OBSTRUCTIONS & occupied))
+					if (!((king | BLACK_CASTLING_K_OBSTRUCTIONS) & opponentAttackMap))
+						addMove(kingPosition, BLACK_CASTLING_KSQUARE, 0x2, moveList);
 		if (board.blackCastleQ)
-			if (!(BLACK_CASTLING_Q_OBSTRUCTIONS & occupied))
-				if (!((king | BLACK_CASTLING_Q_OBSTRUCTIONS ^ BLACK_CASTLING_Q_ATTACK_REMOVER) & opponentAttackMap))
-					addMove(kingPosition, BLACK_CASLTING_QSQUARE, 0x3, moveList);
+			if (!(board.getAttacksToKing(board.turn)))
+				if (!(BLACK_CASTLING_Q_OBSTRUCTIONS & occupied))
+					if (!((king | BLACK_CASTLING_Q_OBSTRUCTIONS ^ BLACK_CASTLING_Q_ATTACK_REMOVER) & opponentAttackMap))
+						addMove(kingPosition, BLACK_CASLTING_QSQUARE, 0x3, moveList);
 	}
 
 }
@@ -430,20 +438,27 @@ std::vector<Move> generateLegalMoves(std::vector<Move> &moveList, const Board& b
 	return newMoveList;
 }
 
-int perft(int depth, Board board) {
+int perft(int depth, Board board, bool Root) {
 	std::vector<Move> moveList;
 	std::vector<Move> legalMoveList = generateLegalMoves(moveList, board);
 	
-	int nodes = 0;
-	if (depth == 0) {
-		return 1;
-	}
-	
+	int cnt, nodes = 0;
+	const bool leaf = (depth == 2);
+
 	for (auto &move : legalMoveList) {
-		int moveNodes = 0;
-		Board newBoard = board;
-		newBoard.makeMove(move);
-		nodes += perft(depth - 1, newBoard);
+		if (depth <= 1 && Root) {
+			cnt = 1, nodes++;
+		}
+		else {
+			Board newBoard = board;
+			newBoard.makeMove(move);
+			std::vector<Move> newMoves;
+			cnt = leaf ? generateLegalMoves(newMoves, newBoard).size() : perft(depth - 1, newBoard, false);
+			nodes += cnt;
+		}
+
+		if (Root)
+			std::cout << coordinateIndexTable[move.start] << coordinateIndexTable[move.end] << ": " << cnt << "\n";
 	}
 
 	return nodes;
