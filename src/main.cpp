@@ -7,11 +7,16 @@
 #include "movegen.hpp"
 #include "tables.hpp"
 #include "rays.hpp"
+#include "eval.hpp"
+#include "search.hpp"
 
 int main()
 {
     std::string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     Board board(startFen);
+    
+    int eval = alphaBetaMax(board, NEGATIVE_INF, POSITIVE_INF, 0);
+    std::cout << "eval: " << eval << "\n";
 
     initRays();
     initTables();

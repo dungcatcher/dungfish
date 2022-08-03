@@ -24,3 +24,4 @@ int bitScanReverse(uint64_t bb) {
 	bb |= bb >> 32;
 	return index64[(bb * debruijn64) >> 58];
 }
+
