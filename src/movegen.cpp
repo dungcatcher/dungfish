@@ -452,6 +452,7 @@ int perft(int depth, Board board, bool Root) {
 		else {
 			Board newBoard = board;
 			newBoard.makeMove(move);
+			
 			std::vector<Move> newMoves;
 			cnt = leaf ? generateLegalMoves(newMoves, newBoard).size() : perft(depth - 1, newBoard, false);
 			nodes += cnt;
