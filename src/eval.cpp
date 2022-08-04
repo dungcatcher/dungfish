@@ -8,6 +8,6 @@ int evaluate(const Board& board, bool turn) {
     score += BISHOP_VALUE * (__builtin_popcountll(board.getWhiteBishops()) - __builtin_popcountll(board.getBlackBishops()));
     score += ROOK_VALUE * (__builtin_popcountll(board.getWhiteRooks()) - __builtin_popcountll(board.getBlackRooks()));
     score += QUEEN_VALUE * (__builtin_popcountll(board.getWhiteQueens()) - __builtin_popcountll(board.getBlackQueens()));
-    
+
     return score;
 }
