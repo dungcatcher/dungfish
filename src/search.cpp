@@ -44,22 +44,23 @@ int quiesce(const Board& board, int alpha, int beta) {
     int standPat = evaluate(board, board.turn);
     if (standPat >= beta)
         return beta;
-    if (alpha > standPat)
+    if (alpha < standPat)
         alpha = standPat;
 
     std::vector<Move> captureList;
     std::vector<Move> moveList;
     std::vector<Move> legalMoveList = generateLegalMoves(moveList, board);
     for (auto &move : legalMoveList) {
-        if (move.flags & 0x4) 
+        if (move.flags & 0x4) {
             captureList.push_back(move);
+        }
     }
 
     for (auto &capture : captureList) {
         Board newBoard = board;
         newBoard.makeMove(capture);
 
-        int score = -quiesce(newBoard, -alpha, -beta);
+        int score = -quiesce(newBoard, -beta, -alpha);
 
         if (score >= beta)
             return beta;
