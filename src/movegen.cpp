@@ -3,6 +3,23 @@
 #include "tables.hpp"
 #include "bitutils.hpp"
 
+std::string getMoveString(Move move) {
+	std::string moveString;
+	moveString += coordinateIndexTable[move.start] + coordinateIndexTable[move.end];
+	if (move.flags & 0x8) {
+		if ((move.flags & 0x3) == 0)
+			moveString += "n";
+		else if ((move.flags & 0x3) == 1)
+			moveString += "b";
+		else if ((move.flags & 0x3) == 2)
+			moveString += "r";
+		else if ((move.flags & 0x3) == 3)
+			moveString += "q";
+	}
+
+	return moveString;
+}
+
 std::string prettyPrintBitboard(uint64_t bb) {
 	std::bitset<64> bitset(bb);
 	std::string binaryString = bitset.to_string();
@@ -459,7 +476,7 @@ int perft(int depth, Board board, bool Root) {
 		}
 
 		if (Root)
-			std::cout << coordinateIndexTable[move.start] << coordinateIndexTable[move.end] << ": " << cnt << "\n";
+			std::cout << getMoveString(move) << ": " << cnt << "\n";
 	}
 
 	return nodes;

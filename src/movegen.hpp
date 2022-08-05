@@ -15,6 +15,7 @@ struct Move {
     unsigned int end;
     unsigned int flags; // See: https://www.chessprogramming.org/Encoding_Moves#Information_Required
 };
+std::string getMoveString(Move move);
 
 inline std::string coordinateIndexTable[64] {
     "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",

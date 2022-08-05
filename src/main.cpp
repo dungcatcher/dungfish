@@ -12,13 +12,16 @@
 
 int main()
 {
+    std::cout << "Initialising dungfish...\n";
+
     std::string startFen = "rnb1kbnr/pppppppp/8/3N4/8/8/PPPPPPPP/R1B1KBNR w KQkq - 0 1";
     Board board(startFen);
 
     initRays();
     initTables();
+    std::cout << "L done\n";
 
-    int eval = alphaBetaMax(board, NEGATIVE_INF, POSITIVE_INF, 4);
+    int eval = alphaBetaMax(board, NEGATIVE_INF, POSITIVE_INF, 5);
     std::cout << "eval: " << eval << "\n";
     
     // auto start = std::chrono::steady_clock::now();
