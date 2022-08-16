@@ -2,42 +2,25 @@
 #include "eval.hpp"
 #include "movegen.hpp"
 
-int alphaBetaMax(const Board& board, int alpha, int beta, int depth) {
-    if (depth == 0)
-        return quiesce(board, alpha, beta);
-    
-    std::vector<Move> moveList;
-	std::vector<Move> legalMoveList = generateLegalMoves(moveList, board);
+int negaMax(const Board& board, int alpha, int beta, int depth) {
+    if (depth == 0) {   
+        return (board.turn ? 1 : -1) * evaluate(board, board.turn);
+    }
+        
+    std::vector<Move> legalMoveList;
+    legalMoveList = generateLegalMoves(legalMoveList, board);
+
+    int value = NEGATIVE_INF;
     for (auto &move : legalMoveList) {
         Board newBoard = board;
         newBoard.makeMove(move);
 
-        int score = alphaBetaMin(newBoard, alpha, beta, depth - 1);
-        if (score >= beta) 
-            return beta;
-        if (score > alpha)
-            alpha = score;
+        value = std::max(value, -negaMax(newBoard, -beta, -alpha, depth - 1));
+        alpha = std::max(alpha, value);
+        if (alpha >= beta) 
+            break;
     }
-    return alpha;
-}
-
-int alphaBetaMin(const Board& board, int alpha, int beta, int depth) {
-    if (depth == 0)
-        return -quiesce(board, alpha, beta);
-    
-    std::vector<Move> moveList;
-	std::vector<Move> legalMoveList = generateLegalMoves(moveList, board);
-    for (auto &move : legalMoveList) {
-        Board newBoard = board;
-        newBoard.makeMove(move);
-
-        int score = alphaBetaMax(newBoard, alpha, beta, depth - 1);
-        if (score <= alpha) 
-            return alpha;
-        if (score < beta)
-            beta = score;
-    }
-    return beta;
+    return value;
 }
 
 int quiesce(const Board& board, int alpha, int beta) {

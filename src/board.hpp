@@ -38,9 +38,9 @@ public:
 
     int getPieceAt(int square) const;
     
-    std::string getPieceAtLocation(int x, int y);
-    std::string prettyPrint();
-    std::string print();
+    std::string getPieceAtLocation(int x, int y) const;
+    std::string prettyPrint() const;
+    std::string print() const;
 
     void parseFen(std::string fen);
     enum fenFields {

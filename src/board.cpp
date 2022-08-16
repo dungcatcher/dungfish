@@ -26,7 +26,7 @@ uint64_t Board::getBlackQueens() const {return pieceBitboards[nQueen] & pieceBit
 uint64_t Board::getWhiteKings() const {return pieceBitboards[nKing] & pieceBitboards[nWhite];}
 uint64_t Board::getBlackKings() const {return pieceBitboards[nKing] & pieceBitboards[nBlack];}
 
-std::string Board::getPieceAtLocation(int x, int y) {
+std::string Board::getPieceAtLocation(int x, int y) const {
     y = 7 - y;  // Reverse y value
     int squareIndex = 8 * y + x;
     uint64_t bitIndex = (uint64_t)1 << squareIndex;
@@ -51,7 +51,7 @@ int Board::getPieceAt(int square) const {
     return -1;
 }
 
-std::string Board::prettyPrint() {
+std::string Board::prettyPrint() const {
     std::string s;
     for (int y = 0; y < 8; y++) {
         s += "+---+---+---+---+---+---+---+---+\n";
@@ -69,7 +69,7 @@ std::string Board::prettyPrint() {
     return s;
 };
 
-std::string Board::print() {
+std::string Board::print() const {
     std::string s;
     for (int y = 0; y < 8; y++) {
         for (int x = 0; x < 8; x++) {
