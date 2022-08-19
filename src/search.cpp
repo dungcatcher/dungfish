@@ -10,17 +10,17 @@ int negaMax(const Board& board, int alpha, int beta, int depth) {
     std::vector<Move> legalMoveList;
     legalMoveList = generateLegalMoves(legalMoveList, board);
 
-    int value = NEGATIVE_INF;
     for (auto &move : legalMoveList) {
         Board newBoard = board;
         newBoard.makeMove(move);
 
-        value = std::max(value, -negaMax(newBoard, -beta, -alpha, depth - 1));
-        alpha = std::max(alpha, value);
-        if (alpha >= beta) 
-            break;
+        int score = -negaMax(newBoard, -beta, -alpha, depth - 1);   
+        if (score >= beta)
+            return score;
+        if (score > alpha) 
+            alpha = score;
     }
-    return value;
+    return alpha;
 }
 
 int quiesce(const Board& board, int alpha, int beta) {
@@ -30,25 +30,22 @@ int quiesce(const Board& board, int alpha, int beta) {
     if (alpha < standPat)
         alpha = standPat;
 
-    std::vector<Move> captureList;
-    std::vector<Move> moveList;
-    std::vector<Move> legalMoveList = generateLegalMoves(moveList, board);
+    std::vector<Move> legalMoveList;
+    legalMoveList = generateLegalMoves(legalMoveList, board);
+
     for (auto &move : legalMoveList) {
+        std::cout << getMoveString(move) << "\n";
         if (move.flags & 0x4) {
-            captureList.push_back(move);
+            Board newBoard = board;
+            newBoard.makeMove(move);
+
+            int score = -quiesce(newBoard, -beta, -alpha);
+
+            if (score >= beta)
+                return beta;
+            if (score > alpha) 
+                alpha = score;
         }
-    }
-
-    for (auto &capture : captureList) {
-        Board newBoard = board;
-        newBoard.makeMove(capture);
-
-        int score = -quiesce(newBoard, -beta, -alpha);
-
-        if (score >= beta)
-            return beta;
-        if (score > alpha) 
-            alpha = score;
     }
     return alpha;
 }
