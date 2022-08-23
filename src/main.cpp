@@ -20,6 +20,7 @@ int main()
     initRays();
     initTables();
     std::cout << "L done\n";
+    std::cout << "ouling\n";
 
     int eval = negaMax(board, NEGATIVE_INF, POSITIVE_INF, 3);
     std::cout << "eval: " << eval << "\n";
