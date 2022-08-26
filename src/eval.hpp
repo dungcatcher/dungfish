@@ -6,4 +6,4 @@ const int BISHOP_VALUE = 330;
 const int ROOK_VALUE = 500;
 const int QUEEN_VALUE = 900;
 
-int evaluate(const Board& board, bool turn);
+int evaluate(const Board& board);

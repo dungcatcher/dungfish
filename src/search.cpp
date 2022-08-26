@@ -24,7 +24,7 @@
 // }
 
 int alphaBetaMax(const Board& board, int alpha, int beta, int depth) {
-    if (depth == 0) return evaluate(board, board.turn);
+    if (depth == 0) return evaluate(board);
 
     std::vector<Move> legalMoveList;    
     legalMoveList = generateLegalMoves(legalMoveList, board);
@@ -40,7 +40,7 @@ int alphaBetaMax(const Board& board, int alpha, int beta, int depth) {
 }
 
 int alphaBetaMin(const Board& board, int alpha, int beta, int depth) {
-    if (depth == 0) return -evaluate(board, board.turn);
+    if (depth == 0) return -evaluate(board);
 
     std::vector<Move> legalMoveList;
     legalMoveList = generateLegalMoves(legalMoveList, board);
@@ -56,7 +56,7 @@ int alphaBetaMin(const Board& board, int alpha, int beta, int depth) {
 }
 
 int quiesce(const Board& board, int alpha, int beta) {
-    int standPat = evaluate(board, board.turn);
+    int standPat = evaluate(board);
     if (standPat >= beta)
         return beta;
     if (alpha < standPat)
