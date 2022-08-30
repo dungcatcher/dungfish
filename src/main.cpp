@@ -21,7 +21,7 @@ int main()
     initTables();
     std::cout << "L done\n";
 
-    int eval = alphaBetaMax(board, NEGATIVE_INF, POSITIVE_INF, 3);
+    int eval = negaMax(board, NEGATIVE_INF, POSITIVE_INF, 3);
     std::cout << "eval: " << eval << "\n";
     
     // auto start = std::chrono::steady_clock::now();
